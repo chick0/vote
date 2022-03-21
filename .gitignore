@@ -1,0 +1,6 @@
+.env
+.JWT_SECRET
+.SECRET_KEY
+
+.idea/
+venv/

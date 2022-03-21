@@ -1,0 +1,10 @@
+flask
+qrcode[pil]
+
+flask-sqlalchemy
+flask-migrate
+mysqlclient
+
+python-dotenv
+
+pyjwt
