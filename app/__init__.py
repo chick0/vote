@@ -16,6 +16,10 @@ def create_app():
     app.config['SQLALCHEMY_DATABASE_URI'] = environ.get("SQLALCHEMY_DATABASE_URI")
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+    __import__("app.models")
+    db.init_app(app=app)
+    migrate.init_app(app=app, db=db)
+
     from . import key
     app.config['SECRET_KEY'] = key.secret_key()
     app.config['JWT_SECRET'] = key.jwt_secret()
