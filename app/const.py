@@ -1,2 +1,1 @@
-VOTE_ADMIN = 1
-VOTE_USER = 2
+VOTE_ADMIN = "admin_of_vote"
