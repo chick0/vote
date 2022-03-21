@@ -13,8 +13,11 @@ bp = Blueprint("vote", __name__, url_prefix="/vote")
 
 @bp.get("")
 def create():
+    title = request.args.get("title", "")
+
     return render_template(
-        "vote/create.html"
+        "vote/create.html",
+        title=title
     )
 
 
