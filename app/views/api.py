@@ -31,5 +31,5 @@ def new_option():
 
 
 @bp.delete("/opt/<string:option_id>")
-def new_option(option_id: str):
+def delete_option(option_id: str):
     return "q"
