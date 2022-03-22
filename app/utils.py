@@ -16,7 +16,7 @@ def resp(message: str = "", data: dict or list = None, code: int = 200):
 
 
 def vote_filter(vote: Vote):
-    if not session.get(vote.id, "") == VOTE_ADMIN:
+    if not session.get(str(vote.id), "") == VOTE_ADMIN:
         return resp(
             message="권한이 없습니다.",
             code=403

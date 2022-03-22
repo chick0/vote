@@ -15,7 +15,7 @@ bp = Blueprint("api", __name__, url_prefix="/api")
 @bp.get("/opts")
 @fetch_vote
 def get_options(vote: Vote):
-    if session.get(vote.id) is None:
+    if session.get(str(vote.id)) is None:
         return resp(
             message="권한이 없습니다.",
             code=403
@@ -119,7 +119,7 @@ def delete_option(option_id: int, vote: Vote):
 @bp.delete("/opt/<int:option_id>")
 @fetch_vote
 def fetch_option(option_id: int, vote: Vote):
-    if session.get(vote.id) is None:
+    if session.get(str(vote.id)) is None:
         return resp(
             message="권한이 없습니다.",
             code=403

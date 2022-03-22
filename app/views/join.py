@@ -33,6 +33,6 @@ def vote(vote_id: int):
     db.session.add(s)
     db.session.commit()
 
-    session[vote_id] = s.id
+    session[str(vote_id)] = s.id
 
     return redirect(url_for("vote.do", vote_id=vote_id))

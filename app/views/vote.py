@@ -44,7 +44,7 @@ def create_post():
     db.session.add(vote)
     db.session.commit()
 
-    session[vote.id] = VOTE_ADMIN
+    session[str(vote.id)] = VOTE_ADMIN
 
     return redirect(
         url_for("vote.panel", vote_id=vote.id)
@@ -53,7 +53,7 @@ def create_post():
 
 @bp.get("/panel/<int:vote_id>")
 def panel(vote_id: int):
-    if not session.get(vote_id) == VOTE_ADMIN:
+    if not session.get(str(vote_id)) == VOTE_ADMIN:
         return "권한이 없습니다."
 
     vote = Vote.query.filter_by(
@@ -61,7 +61,7 @@ def panel(vote_id: int):
     ).first()
 
     if vote is None:
-        del session[vote_id]
+        del session[str(vote_id)]
         return "등록된 투표가 아닙니다!"
 
     return f"panel of {vote.title}"
@@ -69,7 +69,7 @@ def panel(vote_id: int):
 
 @bp.get("/<int:vote_id>")
 def do(vote_id: int):
-    if session.get(vote_id) == VOTE_ADMIN:
+    if session.get(str(vote_id)) == VOTE_ADMIN:
         return "투표 생성자는 투표에 참여 할 수 없습니다."
 
     vote = Vote.query.filter_by(
@@ -77,7 +77,7 @@ def do(vote_id: int):
     ).first()
 
     if vote is None:
-        del session[vote_id]
+        del session[str(vote_id)]
         return "등록된 투표가 아닙니다!"
 
     if not vote.started:
