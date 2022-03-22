@@ -1,3 +1,5 @@
+from json import dumps
+
 from flask import Blueprint
 from flask import request
 from flask import session
@@ -7,6 +9,7 @@ from flask import render_template
 
 from app import db
 from app.models import Vote
+from app.models import Option
 from app.const import VOTE_ADMIN
 
 bp = Blueprint("vote", __name__, url_prefix="/vote")
@@ -64,7 +67,18 @@ def panel(vote_id: int):
         del session[str(vote_id)]
         return "등록된 투표가 아닙니다!"
 
-    return f"panel of {vote.title}"
+    opts = {}
+    for x in Option.query.filter_by(
+        vote_id=vote.id
+    ).all():
+        opts[x.id] = x.name
+
+    return render_template(
+        "vote/panel.html",
+        id=vote.id,
+        title=vote.title,
+        opts=dumps(opts, ensure_ascii=True)
+    )
 
 
 @bp.get("/<int:vote_id>")

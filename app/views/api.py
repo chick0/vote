@@ -40,6 +40,16 @@ def new_option(vote: Vote):
     if vf is not None:
         return vf
 
+    c = Option.query.filter_by(
+        vote_id=vote.id
+    ).count()
+
+    if c > 10:
+        return resp(
+            message="10개 보다 더 많은 선택지를 등록 할 수 없습니다.",
+            code=400
+        )
+
     name = request.json.get("name", "").strip()[:30]
     if len(name) == 0:
         return resp(

@@ -1,0 +1,22 @@
+<h1>{{ title }}</h1>
+<p>{{ id }}</p>
+
+<hr>
+
+<div id="display"></div>
+
+<button id="add_option">선택지 추가</button>
+
+<script src="{{ url_for('static', filename='js/axios.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/options.js') }}"></script>
+<script>
+    const vote_id = {{ id }};
+    let opts = JSON.parse(`{{ opts|safe }}`);
+
+    render_display();
+
+    document.getElementById("add_option").addEventListener("click", () => {
+        const name = window.prompt("새로운 선택지를 입력해주세요.");
+        create_option(name);
+    });  
+</script>
