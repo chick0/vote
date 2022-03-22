@@ -21,7 +21,7 @@ def vote(vote_id: int):
 
     c = Session.query.filter_by(
         vote_id=vote_id
-    ).count() + 1
+    ).count()
 
     if c > v.max:
         return "투표 참여가 마감되었습니다."
