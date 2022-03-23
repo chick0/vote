@@ -41,7 +41,7 @@ def new_option(vote: Vote):
         vote_id=vote.id
     ).count()
 
-    if c > 10:
+    if c >= 10:
         return resp(
             message="10개 보다 더 많은 선택지를 등록 할 수 없습니다.",
             code=400

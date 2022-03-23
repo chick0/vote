@@ -39,7 +39,7 @@ def vote(vote_id: int):
         vote_id=vote_id
     ).count()
 
-    if c > v.max:
+    if c >= v.max:
         return error(
             message="마감된 투표입니다.",
             code=400
