@@ -1,13 +1,27 @@
 <h1>{{ title }}</h1>
 <p>{{ id }}</p>
 
+<img src="{{ url_for('qrcode.join', vote_id=id) }}">
+
+<hr>
+
+<ul>
+    <li>최대 참여인원 : {{max}}명</li>
+    <li>투표 참여인원 : <span id="total">-</span>명</li>
+    <li>투표 완료인원 : <span id="selected">-</span>명</li>
+</ul>
+
 <hr>
 
 <div id="display"></div>
 
 <button id="add_option">선택지 추가</button>
 
+
+<button id="start_vote">투표를 시작합니다.</button>
+
 <script src="{{ url_for('static', filename='js/axios.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/status.js') }}"></script>
 <script src="{{ url_for('static', filename='js/options.js') }}"></script>
 <script>
     const vote_id = {{ id }};
@@ -18,5 +32,11 @@
     document.getElementById("add_option").addEventListener("click", () => {
         const name = window.prompt("새로운 선택지를 입력해주세요.");
         create_option(name);
-    });  
+    });
+
+    document.getElementById("start_vote").addEventListener("click", () => start_vote());
+
+    window.onload = () => {
+        setInterval(update_status, 5000);
+    }
 </script>

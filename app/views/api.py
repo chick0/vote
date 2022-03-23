@@ -4,12 +4,30 @@ from flask import request
 
 from app import db
 from app.models import Vote
+from app.models import Session
 from app.models import Option
 from app.utils import resp
 from app.utils import fetch_vote
 from app.utils import vote_filter
 
 bp = Blueprint("api", __name__, url_prefix="/api")
+
+
+@bp.get("/count")
+@fetch_vote
+def get_session_count(vote: Vote):
+    return resp(
+        data={
+            "max": vote.max,
+            "total": Session.query.filter_by(
+                vote_id=vote.id
+            ).count(),
+            "selected": Session.query.filter_by(
+                vote_id=vote.id,
+                selected=True
+            ).count()
+        }
+    )
 
 
 @bp.get("/opts")

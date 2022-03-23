@@ -11,6 +11,7 @@ from app import db
 from app.models import Vote
 from app.models import Option
 from app.const import VOTE_ADMIN
+from app.utils import resp
 
 bp = Blueprint("vote", __name__, url_prefix="/vote")
 
@@ -77,7 +78,42 @@ def panel(vote_id: int):
         "vote/panel.html",
         id=vote.id,
         title=vote.title,
+        max=vote.max,
         opts=dumps(opts, ensure_ascii=True)
+    )
+
+
+@bp.post("/panel/<int:vote_id>")
+def panel_post(vote_id: int):
+    if not session.get(str(vote_id)) == VOTE_ADMIN:
+        return resp(
+            message="권한이 없습니다.",
+            code=403
+        )
+
+    v = Vote.query.filter_by(
+        id=vote_id,
+    ).first()
+
+    if v is None:
+        del session[str(vote_id)]
+        return resp(
+            message="등록된 투표가 아닙니다.",
+            code=403
+        )
+
+    if v.started:
+        return resp(
+            message="이미 시작된 투표입니다.",
+            code=400
+        )
+
+    v.started = True
+    db.session.commit()
+
+    return resp(
+        message="이제 투표에 참여할 수 있으며 수정 할 수 없습니다.",
+        code=200
     )
 
 
