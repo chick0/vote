@@ -9,6 +9,7 @@ from flask import render_template
 
 from app import db
 from app.models import Vote
+from app.models import Session
 from app.models import Option
 from app.const import VOTE_ADMIN
 from app.utils import resp
@@ -133,4 +134,77 @@ def do(vote_id: int):
     if not vote.started:
         return "지금은 투표에 참여할 수 없습니다."
 
-    return "개발중"
+    s = Session.query.filter_by(
+        id=session.get(str(vote_id)),
+        vote_id=vote_id,
+    ).first()
+
+    if s is None:
+        return "투표에 참여할 권한이 없습니다."
+
+    if s.selected:
+        return "이미 투표에 참여했습니다."
+
+    opts = Option.query.filter_by(
+        vote_id=vote.id
+    ).all()
+
+    return render_template(
+        "vote/do.html",
+        opts=[
+            {
+                "id": x.id,
+                "name": x.name,
+            } for x in opts
+        ]
+    )
+
+
+@bp.post("/<int:vote_id>")
+def do_post(vote_id: int):
+    if session.get(str(vote_id)) == VOTE_ADMIN:
+        return "투표 생성자는 투표에 참여 할 수 없습니다."
+
+    vote = Vote.query.filter_by(
+        id=vote_id,
+    ).first()
+
+    if vote is None:
+        del session[str(vote_id)]
+        return "등록된 투표가 아닙니다!"
+
+    if not vote.started:
+        return "지금은 투표에 참여할 수 없습니다."
+
+    s = Session.query.filter_by(
+        id=session.get(str(vote_id)),
+        vote_id=vote_id,
+    ).first()
+
+    if s is None:
+        return "투표에 참여할 권한이 없습니다."
+
+    if s.selected:
+        return "이미 투표에 참여했습니다."
+
+    try:
+        select = int(request.form.get("select"))
+    except TypeError:
+        return "올바르지 않은 선택 입니다."
+    except ValueError:
+        return "잘못된 변수 전달 / 선택지 변수는 숫자 입니다."
+
+    o = Option.query.filter_by(
+        id=select,
+        vote_id=vote_id
+    ).first()
+
+    if o is None:
+        return "올바르지 않은 선택지 입니다."
+
+    s.select = select
+    s.selected = True
+
+    db.session.commit()
+
+    return redirect(url_for("result.end", vote_id=vote_id))

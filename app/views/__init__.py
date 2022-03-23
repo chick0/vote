@@ -3,6 +3,7 @@ __all__ = [
     "index",
     "join",
     "qrcode",
+    "result",
     "vote",
 ]
 
