@@ -1,6 +1,48 @@
-<form method="post">
-    <input type="text" name="title" placeholder="투표 제목" value="{{title}}">
-    <input type="tel" name="max" max="30" placeholder="투표 참가 인원">
+{% extends 'layout.html' %}
+{% block content %}
+<section class="section">
+    <div class="container">
+        <h1 class="title is-1">투표 생성</h1>
 
-    <button type="submit">다음</button>
-</form>
+    {% set error = request.args.get("error") %}
+    {% if error != none %}
+        <div class="notification is-danger is-light">
+            {{ error }}
+        </div>
+    {% endif %}
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <form method="post">
+            <div class="field is-horizontal">
+                <div class="field-label is-normal">
+                    <label class="label">투표 제목</label>
+                </div>
+                <div class="field-body">
+                    <div class="field">
+                        <p class="control">
+                            <input class="input" type="text" name="title" value="{{title}}">
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="field is-horizontal">
+                <div class="field-label is-normal">
+                    <label class="label">투표 참가 인원</label>
+                </div>
+                <div class="field-body">
+                    <div class="field">
+                        <p class="control">
+                            <input class="input" type="tel" name="max" max="30" placeholder="">
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <button class="button is-link is-large is-fullwidth" type="submit">다음</button>
+        </form>        
+    </div>
+</section>
+{% endblock %}

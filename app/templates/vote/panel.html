@@ -1,25 +1,52 @@
-<h1>{{ title }}</h1>
-<p>{{ id }}</p>
+{% extends 'layout.html' %}
+{% block content %}
+<section class="section">
+    <div class="container">
+        <h1 class="title is-1">{{ title }}</h1>
 
-<img src="{{ url_for('qrcode.join', vote_id=id) }}">
+        <div class="columns">
+            <div class="column">
+                <img class="image" src="{{ url_for('qrcode.join', vote_id=id) }}">
+            </div>
+            <div class="column">
+                <div class="content is-large">
+                    <ul>
+                        <li>최대 참여인원 : {{max}}명</li>
+                        <li>투표 참여인원 : <span id="total">-</span>명</li>
+                        <li>투표 완료인원 : <span id="selected">-</span>명</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
-<hr>
+<section class="section">
+    <div class="container">
+        <h2 class="title is-2">투표 선택지</h2>
+        <div class="content is-large">
+            <ol id="display"></ol>
+        </div>
 
-<ul>
-    <li>최대 참여인원 : {{max}}명</li>
-    <li>투표 참여인원 : <span id="total">-</span>명</li>
-    <li>투표 완료인원 : <span id="selected">-</span>명</li>
-</ul>
+        <button id="add_option" class="button is-link is-light is-large is-fullwidth">선택지 추가</button>
+    </div>
+</section>
 
-<hr>
+<section class="section">
+    <div class="container">
+        <div class="columns">
+            <div class="column">
+                <button id="start_vote" class="button is-info is-large is-fullwidth">투표 시작</button>
+            </div>
+            <div class="column">
+                <a class="button is-dark is-large is-fullwidth" href="{{ url_for('result.panel', vote_id=id) }}">결과 보기</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
 
-<div id="display"></div>
-
-<button id="add_option">선택지 추가</button>
-<button id="start_vote">투표를 시작합니다.</button>
-
-<a href="{{ url_for('result.panel', vote_id=id) }}">투표 결과 보기</a>
-
+{% block script %}
 <script src="{{ url_for('static', filename='js/axios.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/status.js') }}"></script>
 <script src="{{ url_for('static', filename='js/options.js') }}"></script>
@@ -40,3 +67,4 @@
         setInterval(update_status, 5000);
     }
 </script>
+{% endblock %}

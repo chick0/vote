@@ -3,11 +3,11 @@ function render_display(){
     display.innerHTML = "";
 
     Object.keys(opts).forEach((id) => {
-        const p = document.createElement("p");
-        p.appendChild(document.createTextNode(opts[id]));
-        p.setAttribute("data-opt-id", id);
+        const li = document.createElement("li");
+        li.appendChild(document.createTextNode(opts[id]));
+        li.setAttribute("data-opt-id", id);
 
-        display.appendChild(p);
+        display.appendChild(li);
     });
 }
 

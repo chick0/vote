@@ -57,6 +57,7 @@ def panel(vote_id: int):
 
     return render_template(
         "result/panel.html",
+        title=vote.title,
         option=option,
         score=score,
         drop=drop,

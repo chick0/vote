@@ -151,6 +151,7 @@ def do(vote_id: int):
 
     return render_template(
         "vote/do.html",
+        title=vote.title,
         opts=[
             {
                 "id": x.id,

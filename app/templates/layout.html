@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="ko">
+    <head>
+        <meta charset="utf-8">
+        <title>투표</title>
+        <meta name="author" content="chick_0">
+        <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, shrink-to-fit=no">
+        <meta name="keywords" content="투표, 단순투표, QR투표">
+        <meta name="description" content="QR코드로 참여하는 단순 투표 시스템">
+        <link rel="canonical" href="{{ request.url_root }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/bulma.min.css') }}">
+        <meta name="theme-color" content="#DBDBDB">
+    </head>
+    <body>
+        {% block content %}{% endblock %}
+        {% block script %}{% endblock %}
+    </body>
+</html>

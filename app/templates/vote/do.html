@@ -1,5 +1,21 @@
-<form method="post">
-{% for opt in opts %}
-    <button name="select" value="{{opt.id}}" type="submit">{{ opt.name }}</button>
-{% endfor %}
-</form>
+{% extends 'layout.html' %}
+{% block content %}
+<section class="section">
+    <div class="container">
+        <h1 class="title is-1">투표 참여</h1>
+        <p class="subtitle">{{ title }}</p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <form method="post">
+        {% for opt in opts %}
+            <p style="margin-bottom: 5px;">
+                <button class="button is-dark is-large is-fullwidth" name="select" value="{{opt.id}}" type="submit">{{ opt.name }}</button>
+            </p>
+        {% endfor %}
+        </form>
+    </div>
+</section>    
+{% endblock %}
