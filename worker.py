@@ -1,4 +1,5 @@
 from os import environ
+from time import sleep
 from datetime import datetime
 from datetime import timedelta
 
@@ -25,6 +26,7 @@ def e(message: str) -> None:
 
 
 def main():
+    e("=== worker started ===")
     session = sessionmaker(bind=engine)()
 
     now = datetime.now()
@@ -57,7 +59,17 @@ def main():
 
                 session.commit()
 
-    e("finished!")
+    e("=== worker finished ===")
+    wait()
+
+
+def wait():
+    try:
+        sleep(timedelta(minutes=30).seconds)
+        main()
+    except KeyboardInterrupt:
+        from sys import exit
+        exit(0)
 
 
 if __name__ == "__main__":
