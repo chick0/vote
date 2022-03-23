@@ -12,7 +12,7 @@ bp = Blueprint("join", __name__, url_prefix="/join")
 
 @bp.get("/<int:vote_id>")
 def vote(vote_id: int):
-    if session[str(vote_id)] is not None:
+    if session.get(str(vote_id)) is not None:
         return "이미 투표하셨습니다."
 
     v = Vote.query.filter_by(
