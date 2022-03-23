@@ -70,3 +70,10 @@ def error(message: str, code: int):
         title="오류",
         message=message,
     ), code
+
+
+def safe_remove(vote_id: int):
+    try:
+        del session[str(vote_id)]
+    except KeyError:
+        pass

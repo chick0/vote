@@ -14,6 +14,7 @@ from app.models import Option
 from app.const import VOTE_ADMIN
 from app.utils import resp
 from app.utils import error
+from app.utils import safe_remove
 
 bp = Blueprint("vote", __name__, url_prefix="/vote")
 
@@ -70,7 +71,7 @@ def panel(vote_id: int):
     ).first()
 
     if vote is None:
-        del session[str(vote_id)]
+        safe_remove(vote_id)
         return error(
             message="등록된 투표가 아닙니다!",
             code=404
@@ -104,7 +105,7 @@ def panel_post(vote_id: int):
     ).first()
 
     if v is None:
-        del session[str(vote_id)]
+        safe_remove(vote_id)
         return resp(
             message="등록된 투표가 아닙니다.",
             code=403
@@ -144,7 +145,7 @@ def do(vote_id: int):
     ).first()
 
     if vote is None:
-        del session[str(vote_id)]
+        safe_remove(vote_id)
         return error(
             message="등록된 투표가 아닙니다!",
             code=404
@@ -202,7 +203,7 @@ def do_post(vote_id: int):
     ).first()
 
     if vote is None:
-        del session[str(vote_id)]
+        safe_remove(vote_id)
         return error(
             message="등록된 투표가 아닙니다!",
             code=404
