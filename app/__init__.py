@@ -27,4 +27,13 @@ def create_app():
     for view in views.__all__:
         app.register_blueprint(getattr(getattr(views, view), "bp"))
 
+    from .utils import error
+    app.register_error_handler(
+        code_or_exception=404,
+        f=lambda err: error(
+            message="요청하신 페이지를 찾을 수 없습니다.",
+            code=404
+        )
+    )
+
     return app
