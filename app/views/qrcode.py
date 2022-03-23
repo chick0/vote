@@ -26,7 +26,11 @@ def join():
 
     raw_img = BytesIO()
 
-    img = make(f"{request.scheme}://{request.host}{path}")
+    img = make(
+        data=f"{request.scheme}://{request.host}{path}",
+        border=1,
+    )
+
     img.save(raw_img, "PNG")
 
     raw_img.seek(0)
