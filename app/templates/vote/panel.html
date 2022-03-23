@@ -16,9 +16,9 @@
 <div id="display"></div>
 
 <button id="add_option">선택지 추가</button>
-
-
 <button id="start_vote">투표를 시작합니다.</button>
+
+<a href="{{ url_for('result.panel', vote_id=id) }}">투표 결과 보기</a>
 
 <script src="{{ url_for('static', filename='js/axios.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/status.js') }}"></script>
