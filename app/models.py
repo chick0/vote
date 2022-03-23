@@ -28,7 +28,7 @@ class Vote(db.Model):
 
     started = db.Column(
         db.Boolean,
-        nullable=False,
+        nullable=True,
         default=False
     )
 
