@@ -22,6 +22,9 @@ def vote(vote_id: int):
     if v is None:
         return "등록된 투표가 아닙니다."
 
+    if v.started is None:
+        return "마감된 투표입니다."
+
     c = Session.query.filter_by(
         vote_id=vote_id
     ).count()
