@@ -13,6 +13,7 @@ from app.models import Session
 from app.models import Option
 from app.const import VOTE_ADMIN
 from app.utils import resp
+from app.utils import error
 
 bp = Blueprint("vote", __name__, url_prefix="/vote")
 
@@ -59,7 +60,10 @@ def create_post():
 @bp.get("/panel/<int:vote_id>")
 def panel(vote_id: int):
     if not session.get(str(vote_id)) == VOTE_ADMIN:
-        return "권한이 없습니다."
+        return error(
+            message="권한이 없습니다.",
+            code=403
+        )
 
     vote = Vote.query.filter_by(
         id=vote_id,
@@ -67,7 +71,10 @@ def panel(vote_id: int):
 
     if vote is None:
         del session[str(vote_id)]
-        return "등록된 투표가 아닙니다!"
+        return error(
+            message="등록된 투표가 아닙니다!",
+            code=404
+        )
 
     opts = {}
     for x in Option.query.filter_by(
@@ -109,6 +116,12 @@ def panel_post(vote_id: int):
             code=400
         )
 
+    if v.started is None:
+        return resp(
+            message="이미 마감된 투표입니다.",
+            code=400
+        )
+
     v.started = True
     db.session.commit()
 
@@ -121,7 +134,10 @@ def panel_post(vote_id: int):
 @bp.get("/<int:vote_id>")
 def do(vote_id: int):
     if session.get(str(vote_id)) == VOTE_ADMIN:
-        return "투표 생성자는 투표에 참여 할 수 없습니다."
+        return error(
+            message="투표 생성자는 투표에 참여 할 수 없습니다.",
+            code=400
+        )
 
     vote = Vote.query.filter_by(
         id=vote_id,
@@ -129,10 +145,16 @@ def do(vote_id: int):
 
     if vote is None:
         del session[str(vote_id)]
-        return "등록된 투표가 아닙니다!"
+        return error(
+            message="등록된 투표가 아닙니다!",
+            code=404
+        )
 
     if not vote.started:
-        return "지금은 투표에 참여할 수 없습니다."
+        return error(
+            message="지금은 투표에 참여할 수 없습니다.",
+            code=400
+        )
 
     s = Session.query.filter_by(
         id=session.get(str(vote_id)),
@@ -140,10 +162,16 @@ def do(vote_id: int):
     ).first()
 
     if s is None:
-        return "투표에 참여할 권한이 없습니다."
+        return error(
+            message="투표에 참여할 권한이 없습니다.",
+            code=403
+        )
 
     if s.selected:
-        return "이미 투표에 참여했습니다."
+        return error(
+            message="이미 투표에 참여했습니다.",
+            code=400
+        )
 
     opts = Option.query.filter_by(
         vote_id=vote.id
@@ -164,7 +192,10 @@ def do(vote_id: int):
 @bp.post("/<int:vote_id>")
 def do_post(vote_id: int):
     if session.get(str(vote_id)) == VOTE_ADMIN:
-        return "투표 생성자는 투표에 참여 할 수 없습니다."
+        return error(
+            message="투표 생성자는 투표에 참여 할 수 없습니다.",
+            code=400
+        )
 
     vote = Vote.query.filter_by(
         id=vote_id,
@@ -172,10 +203,16 @@ def do_post(vote_id: int):
 
     if vote is None:
         del session[str(vote_id)]
-        return "등록된 투표가 아닙니다!"
+        return error(
+            message="등록된 투표가 아닙니다!",
+            code=404
+        )
 
     if not vote.started:
-        return "지금은 투표에 참여할 수 없습니다."
+        return error(
+            message="지금은 투표에 참여할 수 없습니다.",
+            code=400
+        )
 
     s = Session.query.filter_by(
         id=session.get(str(vote_id)),
@@ -183,17 +220,24 @@ def do_post(vote_id: int):
     ).first()
 
     if s is None:
-        return "투표에 참여할 권한이 없습니다."
+        return error(
+            message="투표에 참여할 권한이 없습니다",
+            code=403
+        )
 
     if s.selected:
-        return "이미 투표에 참여했습니다."
+        return error(
+            message="이미 투표에 참여했습니다.",
+            code=400
+        )
 
     try:
         select = int(request.form.get("select"))
-    except TypeError:
-        return "올바르지 않은 선택 입니다."
-    except ValueError:
-        return "잘못된 변수 전달 / 선택지 변수는 숫자 입니다."
+    except (TypeError, ValueError):
+        return error(
+            message="선택 정보가 올바르지 않습니다.",
+            code=400
+        )
 
     o = Option.query.filter_by(
         id=select,
@@ -201,7 +245,10 @@ def do_post(vote_id: int):
     ).first()
 
     if o is None:
-        return "올바르지 않은 선택지 입니다."
+        return error(
+            message="올바르지 않은 선택지 입니다.",
+            code=400
+        )
 
     s.select = select
     s.selected = True

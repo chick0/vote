@@ -9,6 +9,7 @@ from app.models import Vote
 from app.models import Session
 from app.models import Option
 from app.const import VOTE_ADMIN
+from app.utils import error
 
 bp = Blueprint("result", __name__, url_prefix="/result")
 
@@ -23,7 +24,10 @@ def end(vote_id: int):
 @bp.get("/panel/<int:vote_id>")
 def panel(vote_id: int):
     if not session.get(str(vote_id)) == VOTE_ADMIN:
-        return "권한이 없습니다."
+        return error(
+            message="권한이 없습니다.",
+            code=403
+        )
 
     vote = Vote.query.filter_by(
         id=vote_id

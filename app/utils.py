@@ -3,6 +3,7 @@ from functools import wraps
 from flask import request
 from flask import session
 from flask import jsonify
+from flask import render_template
 
 from app.models import Vote
 from app.const import VOTE_ADMIN
@@ -55,3 +56,11 @@ def fetch_vote(f):
         return f(*args, **kwargs)
 
     return decorator
+
+
+def error(message: str, code: int):
+    return render_template(
+        "error.html",
+        title="오류",
+        message=message,
+    ), code
