@@ -29,6 +29,12 @@ def vote_filter(vote: Vote):
             code=400
         )
 
+    if vote.started is None:
+        return resp(
+            message="마감된 투표입니다.",
+            code=400
+        )
+
     return None
 
 
