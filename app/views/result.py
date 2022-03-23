@@ -1,5 +1,14 @@
 from flask import Blueprint
+from flask import session
+from flask import redirect
+from flask import url_for
 from flask import render_template
+
+from app import db
+from app.models import Vote
+from app.models import Session
+from app.models import Option
+from app.const import VOTE_ADMIN
 
 bp = Blueprint("result", __name__, url_prefix="/result")
 
@@ -10,3 +19,48 @@ def end(vote_id: int):
         "result/end.html",
     )
 
+
+@bp.get("/panel/<int:vote_id>")
+def panel(vote_id: int):
+    if not session.get(str(vote_id)) == VOTE_ADMIN:
+        return "권한이 없습니다."
+
+    vote = Vote.query.filter_by(
+        id=vote_id
+    ).first()
+
+    if vote.started is False:
+        return redirect(url_for("vote.panel", vote_id=vote_id, error="투표가 시작되지 않았습니다."))
+
+    if vote.started is True:
+        vote.started = None
+        db.session.commit()
+
+    opts = Option.query.filter_by(
+        vote_id=vote.id
+    ).all()
+
+    option = {}
+    score = {}
+    drop = 0
+    for opt in opts:
+        option[opt.id] = opt.name
+        score[opt.id] = 0
+
+    for s in Session.query.filter_by(
+        vote_id=vote.id,
+    ).all():
+        if s.selected:
+            score[s.select] += 1
+        else:
+            drop += 1
+
+    return render_template(
+        "result/panel.html",
+        option=option,
+        score=score,
+        drop=drop,
+        votes=Session.query.filter_by(
+            vote_id=vote.id
+        ).count()
+    )

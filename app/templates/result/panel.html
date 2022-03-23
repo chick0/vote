@@ -1,0 +1,10 @@
+<p>투표에는 총 {{votes}}명이 참여했습니다.</p>
+<p>기권표는 총 {{drop}}개가 있습니다.</p>
+
+<ul>
+{% for opt in option.keys() %}
+    <li>
+        {{ option[opt] }}: {{ score[opt] }}
+    </li>
+{% endfor %}
+</ul>
