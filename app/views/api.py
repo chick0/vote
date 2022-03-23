@@ -30,27 +30,6 @@ def get_session_count(vote: Vote):
     )
 
 
-@bp.get("/opts")
-@fetch_vote
-def get_options(vote: Vote):
-    if session.get(str(vote.id)) is None:
-        return resp(
-            message="권한이 없습니다.",
-            code=403
-        )
-
-    return resp(
-        data=[
-            {
-                "id": x.id,
-                "name": x.name,
-            } for x in Option.query.filter_by(
-                vote_id=vote.id
-            ).all()
-        ]
-    )
-
-
 @bp.post("/opt")
 @fetch_vote
 def new_option(vote: Vote):
