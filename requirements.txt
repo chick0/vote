@@ -49,8 +49,6 @@ pillow==9.0.1
     # via qrcode
 pycparser==2.21
     # via cffi
-pyjwt==2.3.0
-    # via -r requirements.in
 python-dotenv==0.19.2
     # via -r requirements.in
 qrcode[pil]==7.3.1

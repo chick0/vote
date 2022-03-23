@@ -21,10 +21,3 @@ def secret_key() -> bytes:
         filename=".SECRET_KEY",
         length=32
     )
-
-
-def jwt_secret() -> bytes:
-    return _key(
-        filename=".JWT_SECRET",
-        length=48
-    )

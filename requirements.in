@@ -7,7 +7,5 @@ mysqlclient
 
 python-dotenv
 
-pyjwt
-
 gunicorn
 gevent

@@ -22,7 +22,6 @@ def create_app():
 
     from . import key
     app.config['SECRET_KEY'] = key.secret_key()
-    app.config['JWT_SECRET'] = key.jwt_secret()
 
     from . import views
     for view in views.__all__:
