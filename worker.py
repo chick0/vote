@@ -30,7 +30,7 @@ def main():
     session = sessionmaker(bind=engine)()
 
     now = datetime.now()
-    ttl = timedelta(days=1)
+    ttl = timedelta(hours=6)
 
     total_votes = session.query(Vote).count()
     page = 5
