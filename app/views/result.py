@@ -1,3 +1,5 @@
+from random import randint
+
 from flask import Blueprint
 from flask import session
 from flask import redirect
@@ -59,6 +61,18 @@ def panel(vote_id: int):
         else:
             drop += 1
 
+    def gen_color():
+        r = randint(1, 255)
+        g = randint(1, 255)
+        b = randint(1, 255)
+
+        if r == g == b:
+            r = randint(1, 255)
+            g = randint(1, 255)
+            b = randint(1, 255)
+
+        return f"rgb({r}, {g}, {b})"
+
     return render_template(
         "result/panel.html",
         title=vote.title,
@@ -67,5 +81,8 @@ def panel(vote_id: int):
         drop=drop,
         votes=Session.query.filter_by(
             vote_id=vote.id
-        ).count()
+        ).count(),
+        colors=[
+            gen_color() for i in range(0, len(option))
+        ]
     )
