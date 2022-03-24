@@ -12,11 +12,35 @@
                     <p>기권표는 총 <b>{{ drop }}개</b>가 있습니다.</p>
                 </div>
 
+                <table class="table is-fullwidth">
+                    <thead>
+                        <tr>
+                            <th>선택지</th>
+                            <th>받은 투표수</th>
+                            <th>득표율</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for opt in option %}
+                    {% if score[opt] == large_score %}
+                        {% set class = "is-selected" %}
+                    {% else %}
+                        {% set class = "" %}
+                    {% endif %}
+                        <tr class="{{class}}">
+                            <th>{{ option[opt] }}</td>
+                            <td>{{ score[opt] }}</td>
+                            <td>{{ (score[opt] / (votes+drop) * 100) | int }} %</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+
                 <a class="button is-info is-light is-large is-fullwidth" href="{{ url_for('vote.create') }}">새로운 투표 만들기</a>
             </div>
             <div class="column">
                 <canvas id="chart"></canvas>
-            </div>        
+            </div>
         </div>
     </div>
 </section>

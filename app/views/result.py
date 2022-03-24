@@ -53,11 +53,14 @@ def panel(vote_id: int):
         option[opt.id] = opt.name
         score[opt.id] = 0
 
+    large_score = 0
     for s in Session.query.filter_by(
         vote_id=vote.id,
     ).all():
         if s.selected:
             score[s.select] += 1
+            if score[s.select] > large_score:
+                large_score = score[s.select]
         else:
             drop += 1
 
@@ -78,6 +81,7 @@ def panel(vote_id: int):
         title=vote.title,
         option=option,
         score=score,
+        large_score=large_score,
         drop=drop,
         votes=Session.query.filter_by(
             vote_id=vote.id
