@@ -32,6 +32,11 @@ class Vote(db.Model):
         default=False
     )
 
+    code = db.Column(
+        db.String(4),
+        nullable=False
+    )
+
     def __repr__(self):
         return f"<Vote id={self.id} title={self.title!r}>"
 

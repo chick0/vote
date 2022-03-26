@@ -22,7 +22,11 @@ def join():
     if vote_id is None:
         return return_none()
 
-    path = url_for("join.vote", vote_id=vote_id)
+    code = request.args.get("code", "")
+    if len(code) != 4:
+        return return_none()
+
+    path = url_for("join.vote", vote_id=vote_id, code=code)
 
     raw_img = BytesIO()
 

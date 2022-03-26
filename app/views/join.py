@@ -6,14 +6,21 @@ from flask import url_for
 from app import db
 from app.models import Vote
 from app.models import Session
+from app.const import VOTE_ADMIN
 from app.utils import error
 
 bp = Blueprint("join", __name__, url_prefix="/join")
 
 
-@bp.get("/<int:vote_id>")
-def vote(vote_id: int):
-    if session.get(str(vote_id)) is not None:
+@bp.get("/<int:vote_id>/<string:code>")
+def vote(vote_id: int, code: str):
+    s = session.get(str(vote_id), None)
+    if s == VOTE_ADMIN:
+        return error(
+            message="투표 관리자는 투표에 참여할 수 없습니다.",
+            code=400
+        )
+    elif s is not None:
         return error(
             message="이미 투표하셨습니다.",
             code=400
@@ -21,6 +28,7 @@ def vote(vote_id: int):
 
     v = Vote.query.filter_by(
         id=vote_id,
+        code=code
     ).first()
 
     if v is None:

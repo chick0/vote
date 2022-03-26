@@ -1,3 +1,4 @@
+from os import urandom
 from json import dumps
 
 from flask import Blueprint
@@ -47,6 +48,7 @@ def create_post():
                                 error="최대 50명까지 참여가 가능합니다."))
 
     vote.started = False
+    vote.code = urandom(2).hex()
 
     db.session.add(vote)
     db.session.commit()
@@ -88,6 +90,7 @@ def panel(vote_id: int):
         id=vote.id,
         title=vote.title,
         max=vote.max,
+        code=vote.code,
         opts=dumps(opts, ensure_ascii=True)
     )
 
