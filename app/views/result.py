@@ -16,8 +16,8 @@ from app.utils import error
 bp = Blueprint("result", __name__, url_prefix="/result")
 
 
-@bp.get("/vote/<int:vote_id>/end")
-def end(vote_id: int):
+@bp.get("/<int:session_id>")
+def end(session_id: int):
     return render_template(
         "result/end.html",
     )

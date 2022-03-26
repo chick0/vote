@@ -279,4 +279,4 @@ def do_post(vote_id: int):
 
     db.session.commit()
 
-    return redirect(url_for("result.end", vote_id=vote_id))
+    return redirect(url_for("result.end", session_id=s.id))
