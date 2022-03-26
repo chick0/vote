@@ -126,6 +126,16 @@ def panel_post(vote_id: int):
             code=400
         )
 
+    opts = Option.query.filter_by(
+        vote_id=vote_id
+    ).count()
+
+    if opts < 2:
+        return resp(
+            message="투표를 시작하려면 적어도 2개의 선택지를 등록해야 합니다.",
+            code=400
+        )
+
     v.started = True
     db.session.commit()
 
