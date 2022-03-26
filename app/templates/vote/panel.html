@@ -36,10 +36,10 @@
     <div class="container">
         <div class="columns">
             <div class="column">
-                <button id="start_vote" class="button is-info is-large is-fullwidth">투표 시작</button>
+                <button id="vote_start" class="button is-info is-large is-fullwidth">투표 시작</button>
             </div>
             <div class="column">
-                <a class="button is-dark is-large is-fullwidth" href="{{ url_for('result.panel', vote_id=id) }}">결과 보기</a>
+                <button id="vote_end" class="button is-dark is-large is-fullwidth">결과 보기</button>
             </div>
         </div>
     </div>
@@ -61,7 +61,13 @@
         create_option(name);
     });
 
-    document.getElementById("start_vote").addEventListener("click", () => start_vote());
+    document.getElementById("vote_start").addEventListener("click", () => start_vote());
+    document.getElementById("vote_end").addEventListener("click", () => {
+        const url = "{{ url_for('result.panel', vote_id=id) }}";
+        if(confirm("투표를 마감하고 결과를 확인하시겠습니까?")){
+            location.href = url;
+        }
+    })
 
     window.onload = () => {
         setInterval(update_status, 5000);
