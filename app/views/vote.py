@@ -84,6 +84,9 @@ def panel(vote_id: int):
             code=404
         )
 
+    if vote.started is None:
+        return redirect(url_for("result.panel", vote_id=vote_id))
+
     opts = {}
     for x in Option.query.filter_by(
         vote_id=vote.id
