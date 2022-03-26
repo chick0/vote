@@ -30,7 +30,11 @@
                         <tr class="{{class}}">
                             <th>{{ option[opt] }}</td>
                             <td>{{ score[opt] }}</td>
+                        {% if votes+drop == 0 %}
+                            <td>- %</td>
+                        {% else %}
                             <td>{{ (score[opt] / (votes+drop) * 100) | int }} %</td>
+                        {% endif %}
                         </tr>
                     {% endfor %}
                     </tbody>
