@@ -62,7 +62,11 @@ def create_post():
 
 @bp.get("/panel/<int:vote_id>")
 def panel(vote_id: int):
-    if not session.get(str(vote_id)) == VOTE_ADMIN:
+    s = session.get(str(vote_id))
+    if not s == VOTE_ADMIN:
+        if s is not None:
+            return redirect(url_for("vote.do", vote_id=vote_id))
+
         return error(
             message="권한이 없습니다.",
             code=403
