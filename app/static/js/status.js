@@ -9,6 +9,7 @@ function update_status() {
         const data = resp.data;
         document.getElementById("total").innerText = data.data.total;
         document.getElementById("selected").innerText = data.data.selected;
+        document.getElementById("per").innerText = parseInt(data.data.selected / data.data.max * 100);
     }).catch((err) => {
         console.error(err);
     })
