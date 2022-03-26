@@ -39,6 +39,7 @@ def panel(vote_id: int):
         return redirect(url_for("vote.panel", vote_id=vote_id, error="투표가 시작되지 않았습니다."))
 
     if vote.started is True:
+        session[f"{vote.id}:vote"] = dict(id=vote.id, title="[마감] " + vote.title)
         vote.started = None
         db.session.commit()
 

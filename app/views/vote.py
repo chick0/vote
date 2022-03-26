@@ -54,6 +54,7 @@ def create_post():
     db.session.commit()
 
     session[str(vote.id)] = VOTE_ADMIN
+    session[f"{vote.id}:vote"] = dict(id=vote.id, title=vote.title)
 
     return redirect(
         url_for("vote.panel", vote_id=vote.id)
@@ -107,24 +108,24 @@ def panel_post(vote_id: int):
             code=403
         )
 
-    v = Vote.query.filter_by(
+    vote = Vote.query.filter_by(
         id=vote_id,
     ).first()
 
-    if v is None:
+    if vote is None:
         safe_remove(vote_id)
         return resp(
             message="등록된 투표가 아닙니다.",
             code=403
         )
 
-    if v.started:
+    if vote.started:
         return resp(
             message="이미 시작된 투표입니다.",
             code=400
         )
 
-    if v.started is None:
+    if vote.started is None:
         return resp(
             message="이미 마감된 투표입니다.",
             code=400
@@ -140,8 +141,10 @@ def panel_post(vote_id: int):
             code=400
         )
 
-    v.started = True
+    vote.started = True
     db.session.commit()
+
+    session[f"{vote.id}:vote"] = dict(id=vote.id, title="[진행중] "+vote.title)
 
     return resp(
         message="이제 투표에 참여할 수 있으며 수정 할 수 없습니다.",

@@ -1,0 +1,22 @@
+{% extends 'layout.html' %}
+{% block content %}
+<section class="section">
+    <div class="container">
+        <h1 class="title is-1">내 투표</h1>
+    {% set error = request.args.get("error") %}
+    {% if error != none %}
+        <div class="notification is-danger is-light">
+            {{ error }}
+        </div>
+    {% endif %}
+
+        <div class="content is-large">
+            <ol>
+            {% for vote in votes %}
+                <li><a href="{{ vote['url'] }}">{{ vote['title'] }}</a></li>
+            {% endfor %}
+            <ol>
+        </div>
+    </div>
+</section>
+{% endblock %}
