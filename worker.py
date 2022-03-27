@@ -3,6 +3,10 @@ from os import environ
 from time import sleep
 from datetime import datetime
 from datetime import timedelta
+from logging import INFO
+from logging import getLogger
+from logging import Formatter
+from logging import StreamHandler
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -22,8 +26,20 @@ def init_engine():
     })
 
 
+def init_logger():
+    logger = getLogger()
+    logger.setLevel(INFO)
+
+    fmt = Formatter("%(asctime)s [%(levelname)s]: %(message)s", "%Y-%m-%d %H:%M:%S")
+    sh = StreamHandler()
+    sh.setFormatter(fmt)
+
+    logger.addHandler(sh)
+
+
 def e(message: str) -> None:
-    print(datetime.now().strftime("[%Y-%m-%d %H:%M:%S]"), message)
+    logger = getLogger()
+    logger.info(message)
 
 
 def main():
@@ -75,4 +91,5 @@ def wait():
 
 if __name__ == "__main__":
     init_engine()
+    init_logger()
     main()
