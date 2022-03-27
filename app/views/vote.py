@@ -48,6 +48,10 @@ def create_post():
         return redirect(url_for("vote.create",
                                 title=vote.title,
                                 error="최대 50명까지 참여가 가능합니다."))
+    elif vote.max == 0:
+        return redirect(url_for("vote.create",
+                                title=vote.title,
+                                error="투표에 참가할 수 있는 인원이 없습니다."))
 
     vote.started = False
     vote.code = urandom(2).hex()
