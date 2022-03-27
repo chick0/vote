@@ -54,6 +54,15 @@ def new_option(vote: Vote):
             code=400
         )
 
+    if Option.query.filter_by(
+        vote_id=vote.id,
+        name=name
+    ).first() is not None:
+        return resp(
+            message="중복된 선택지는 등록 할 수 없습니다.",
+            code=400
+        )
+
     o = Option()
     o.vote_id = vote.id
     o.name = name
