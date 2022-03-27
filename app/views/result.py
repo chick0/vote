@@ -2,6 +2,7 @@ from random import randint
 
 from flask import Blueprint
 from flask import session
+from flask import abort
 from flask import redirect
 from flask import url_for
 from flask import render_template
@@ -16,8 +17,24 @@ from app.utils import error
 bp = Blueprint("result", __name__, url_prefix="/result")
 
 
-@bp.get("/<int:session_id>")
-def end(session_id: int):
+@bp.get("/<int:vote_id>")
+def end(vote_id: int):
+    session_id = session.get(str(vote_id), None)
+    if session_id is None:
+        return abort(404)
+    elif session_id == VOTE_ADMIN:
+        return abort(404)
+
+    s = Session.query.filter_by(
+        id=session_id,
+        vote_id=vote_id,
+    ).first()
+    if s is None:
+        return abort(404)
+
+    if s.selected is False:
+        return redirect(url_for("vote.do", vote_id=vote_id))
+
     return render_template(
         "result/end.html",
     )
