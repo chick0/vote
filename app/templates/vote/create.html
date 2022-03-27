@@ -43,8 +43,15 @@
 
             <br>
 
-            <button class="button is-link is-large is-fullwidth" type="submit">다음</button>
-        </form>        
+            <div class="columns">
+                <div class="column">
+                    <button class="button is-info is-large is-fullwidth" type="submit">다음</button>
+                </div>
+                <div class="column">
+                    <a class="button is-danger is-light is-large is-fullwidth" href="{{ url_for('index.index') }}">취소</a>
+                </div>
+            </div>
+        </form>
     </div>
 </section>
 {% endblock %}
