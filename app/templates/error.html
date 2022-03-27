@@ -9,6 +9,10 @@
 <section class="section">
     <div class="container">
         <div class="content is-large">{{ message }}</div>
+
+        <div>
+            <a class="button is-warning is-large" href="{{ url_for('index.index') }}">메인 화면으로 이동</a>
+        </div>
     </div>
 </section>
 {% endblock %}
