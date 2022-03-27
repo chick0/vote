@@ -33,7 +33,9 @@ def create():
 @bp.post("")
 def create_post():
     vote = Vote()
-    vote.title = request.form.get("title", "제목 없는 투표")[:60]
+    vote.title = request.form.get("title", "")[:60]
+    if len(vote.title) == 0:
+        vote.title = "제목 없는 투표"
 
     try:
         vote.max = int(request.form.get("max", "undefined"))
