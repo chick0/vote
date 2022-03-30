@@ -22,34 +22,24 @@ bp = Blueprint("vote", __name__, url_prefix="/vote")
 
 @bp.get("")
 def create():
-    title = request.args.get("title", "")
-
-    return render_template(
-        "vote/create.html",
-        title=title
-    )
-
-
-@bp.post("")
-def create_post():
     vote = Vote()
-    vote.title = request.form.get("title", "")[:60]
+    vote.title = request.args.get("title", "")[:60]
     if len(vote.title) == 0:
         vote.title = "제목 없는 투표"
 
     try:
-        vote.max = int(request.form.get("max", "undefined"))
+        vote.max = int(request.args.get("max", "undefined"))
     except ValueError:
-        return redirect(url_for("vote.create",
+        return redirect(url_for("create.ui",
                                 title=vote.title,
                                 error="투표 참여 인원이 숫자가 아닙니다."))
 
     if vote.max > 50:
-        return redirect(url_for("vote.create",
+        return redirect(url_for("create.ui",
                                 title=vote.title,
                                 error="최대 50명까지 참여가 가능합니다."))
     elif vote.max == 0:
-        return redirect(url_for("vote.create",
+        return redirect(url_for("create.ui",
                                 title=vote.title,
                                 error="투표에 참가할 수 있는 인원이 없습니다."))
 
