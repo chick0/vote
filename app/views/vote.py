@@ -22,6 +22,11 @@ bp = Blueprint("vote", __name__, url_prefix="/vote")
 
 @bp.get("")
 def create():
+    def to_ui(message: str):
+        return redirect(url_for("create.ui",
+                                title=vote.title,
+                                error=message))
+
     vote = Vote()
     vote.title = request.args.get("title", "")[:60]
     if len(vote.title) == 0:
@@ -30,18 +35,14 @@ def create():
     try:
         vote.max = int(request.args.get("max", "undefined"))
     except ValueError:
-        return redirect(url_for("create.ui",
-                                title=vote.title,
-                                error="투표 참여 인원이 숫자가 아닙니다."))
+        return to_ui(message="투표 참여 인원이 숫자가 아닙니다.")
 
     if vote.max > 50:
-        return redirect(url_for("create.ui",
-                                title=vote.title,
-                                error="최대 50명까지 참여가 가능합니다."))
+        return to_ui(message="최대 50명까지 참여가 가능합니다.")
+    elif vote.max <= 2:
+        return to_ui(message="투표 참여 인원은 3명이상으로 설정해야 합니다.")
     elif vote.max == 0:
-        return redirect(url_for("create.ui",
-                                title=vote.title,
-                                error="투표에 참가할 수 있는 인원이 없습니다."))
+        return to_ui(message="투표에 참가할 수 있는 인원이 없습니다.")
 
     vote.started = False
     vote.code = urandom(2).hex()
