@@ -26,6 +26,12 @@ class Vote(db.Model):
         default=func.now()
     )
 
+    finished_date = db.Column(
+        db.DateTime,
+        nullable=True,
+        default=None,
+    )
+
     started = db.Column(
         db.Boolean,
         nullable=True,
