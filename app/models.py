@@ -32,6 +32,9 @@ class Vote(db.Model):
         default=None,
     )
 
+    # true : 투표 진행중
+    # false : 투표가 시작되지 않음
+    # none : 투표가 종료됨(마감됨)
     started = db.Column(
         db.Boolean,
         nullable=True,
