@@ -1,4 +1,5 @@
 from random import randint
+from datetime import datetime
 
 from flask import Blueprint
 from flask import session
@@ -58,6 +59,7 @@ def panel(vote_id: int):
     if vote.started is True:
         session[f"{vote.id}:vote"] = dict(id=vote.id, title="[마감] " + vote.title)
         vote.started = None
+        vote.finished_date = datetime.now()
         db.session.commit()
 
     opts = Option.query.filter_by(
