@@ -41,6 +41,13 @@
                 </table>
 
                 <a class="button is-info is-light is-large is-fullwidth" href="{{ url_for('index.create') }}">새로운 투표 만들기</a>
+                <br>
+                <div class="columns">
+                    <div class="column">
+                        <a class="button is-link is-light is-fullwidth" href="{{ url_for('dump.to_csv', vote_id=id, title=title) }}">csv 파일 다운로드</a>
+                    </div>
+                    <div class="column"></div>
+                </div>
             </div>
             <div class="column">
                 <canvas id="chart"></canvas>

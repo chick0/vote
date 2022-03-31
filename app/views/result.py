@@ -14,6 +14,7 @@ from app.models import Session
 from app.models import Option
 from app.const import VOTE_ADMIN
 from app.utils import error
+from app.utils import fetch_result
 
 bp = Blueprint("result", __name__, url_prefix="/result")
 
@@ -98,6 +99,7 @@ def panel(vote_id: int):
 
     return render_template(
         "result/panel.html",
+        id=vote.id,
         title=vote.title,
         option=option,
         score=score,
