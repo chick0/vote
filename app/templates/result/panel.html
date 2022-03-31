@@ -21,26 +21,29 @@
                         </tr>
                     </thead>
                     <tbody>
-                    {% for opt in option %}
-                    {% if score[opt] == large_score %}
+                    {% for r in result %}
+                    {% if r[1] == large_score %}
                         {% set class = "is-selected" %}
                     {% else %}
                         {% set class = "" %}
                     {% endif %}
                         <tr class="{{class}}">
-                            <th>{{ option[opt] }}</td>
-                            <td>{{ score[opt] }}</td>
-                        {% if votes+drop == 0 %}
-                            <td>- %</td>
-                        {% else %}
-                            <td>{{ (score[opt] / (votes+drop) * 100) | int }} %</td>
-                        {% endif %}
+                            <td>{{ r[0] }}</td>
+                            <td>{{ r[1] }}</td>
+                            <td>{{ r[2] }}</td>
                         </tr>
                     {% endfor %}
                     </tbody>
                 </table>
 
                 <a class="button is-info is-light is-large is-fullwidth" href="{{ url_for('index.create') }}">새로운 투표 만들기</a>
+                <br>
+                <div class="columns">
+                    <div class="column">
+                        <a class="button is-link is-light is-fullwidth" href="{{ url_for('dump.to_csv', vote_id=id, title=title) }}">csv 파일 다운로드</a>
+                    </div>
+                    <div class="column"></div>
+                </div>
             </div>
             <div class="column">
                 <canvas id="chart"></canvas>
@@ -54,11 +57,11 @@
 <script src="{{ url_for('static', filename='js/chart.min.js') }}"></script>
 <script>
     const data = {
-        labels: {{ option.values()|list|safe }},
+        labels: {{ labels|list|safe }},
         datasets: [{
             label: '투표 결과',
             backgroundColor: {{ colors|list|safe }},
-            data: {{ score.values()|list }},
+            data: {{ data|list|safe }},
         }],
     };
 

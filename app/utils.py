@@ -6,6 +6,8 @@ from flask import jsonify
 from flask import render_template
 
 from app.models import Vote
+from app.models import Session
+from app.models import Option
 from app.const import VOTE_ADMIN
 
 
@@ -77,3 +79,41 @@ def safe_remove(vote_id: int):
         del session[str(vote_id)]
     except KeyError:
         pass
+
+
+def fetch_result(vote_id: int) -> list:
+    def calc_percent(t):
+        try:
+            per = int(t / v.max * 100)
+            return f"{per} %"
+        except ZeroDivisionError:
+            return "-"
+
+    opts = Option.query.filter_by(
+        vote_id=vote_id
+    ).all()
+
+    score = {}
+    for s in Session.query.filter_by(
+        vote_id=vote_id,
+    ).all():
+        if s.selected:
+            try:
+                score[s.select] += 1
+            except KeyError:
+                score[s.select] = 1
+
+    v = Vote.query.with_entities(Vote.max).filter_by(
+        id=vote_id
+    ).first()
+
+    drop = v.max - sum(score.values())
+    result = [
+        [
+            opt.name,
+            score.get(opt.id, 0),
+            calc_percent(t=score.get(opt.id, 0))
+        ] for opt in opts
+    ]
+    result.append(['기권', drop, calc_percent(t=drop)])
+    return result
