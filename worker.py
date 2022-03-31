@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from os import environ
+from time import time
 from time import sleep
 from datetime import datetime
 from datetime import timedelta
@@ -43,40 +44,46 @@ def e(message: str) -> None:
 
 
 def main():
-    e("=== worker started ===")
+    def delete_all(vote_id):
+        session.query(Vote).filter_by(
+            id=vote_id
+        ).delete()
+        session.query(Session).filter_by(
+            vote_id=vote_id
+        ).delete()
+        session.query(Option).filter_by(
+            vote_id=vote_id
+        ).delete()
+
+        session.commit()
+
+    a = time()
     session = sessionmaker(bind=engine)()
 
     now = datetime.now()
-    ttl = timedelta(hours=6)
 
     total_votes = session.query(Vote).count()
+    deleted_votes = 0
     page = 5
     total_pages = getattr(__import__("math"), "ceil")(total_votes / page)
 
-    e(f"total_votes = {total_votes}")
-    e(f"total_pages = {total_pages}")
+    e(f"total_votes   = {total_votes}")
 
     last_id = 0
     for index in range(0, total_pages):
         for v in session.query(Vote).filter(Vote.id > last_id).limit(page).all():
             last_id = v.id
+            if type(v.started) == bool:
+                if now - v.creation_date > timedelta(hours=3):
+                    delete_all(vote_id=v.id)
+                    deleted_votes += 1
+            else:
+                if now - v.finished_date > timedelta(hours=1):
+                    delete_all(vote_id=v.id)
+                    deleted_votes += 1
 
-            if now - v.creation_date > ttl:
-                e(f"vote id({v.id}) is expired")
-
-                session.query(Vote).filter_by(
-                    id=v.id
-                ).delete()
-                session.query(Session).filter_by(
-                    vote_id=v.id
-                ).delete()
-                session.query(Option).filter_by(
-                    vote_id=v.id
-                ).delete()
-
-                session.commit()
-
-    e("=== worker finished ===")
+    e(f"deleted_votes = {deleted_votes}")
+    e(f"elapsed time  = {round(time() - a, 2)}s")
     wait()
 
 
@@ -85,11 +92,13 @@ def wait():
         sleep(timedelta(minutes=30).seconds)
         main()
     except KeyboardInterrupt:
-        from sys import exit
-        exit(0)
+        return 0
 
 
 if __name__ == "__main__":
     init_engine()
     init_logger()
+
+    e("===== worker  started =====")
     main()
+    e("===== worker finished =====")
