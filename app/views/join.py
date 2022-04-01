@@ -21,6 +21,14 @@ def vote(vote_id: int, code: str):
             code=400
         )
     elif s is not None:
+        q = Session.query.filter_by(
+            id=s,
+            vote_id=vote_id,
+        ).first()
+        if q is not None:
+            if q.selected is False:
+                return redirect(url_for("vote.do", vote_id=vote_id))
+
         return error(
             message="이미 투표하셨습니다.",
             code=400
