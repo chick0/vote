@@ -12,8 +12,17 @@ function update_status() {
         document.getElementById("per").innerText = parseInt(data.data.selected / data.data.max * 100);
 
         if(data.data.selected == data.data.max) {
-            alert("투표가 마감되었습니다!");
-            location.href = result_url;
+            Swal.fire({
+                icon: "success",
+                text: "투표가 마감되었습니다!",
+                showCancelButton: false,
+                showConfirmButton: true,
+                confirmButtonText: "닫기",
+                timer: 3500,
+                timerProgressBar: true
+            }).then(() => {
+                location.href = result_url;
+            });
         }
     }).catch((err) => {
         console.error(err);
@@ -21,19 +30,38 @@ function update_status() {
 }
 
 function start_vote(){
+    function err(message) {
+        Swal.fire({
+            icon: "error",
+            text: message,
+            showCancelButton: false,
+            showConfirmButton: true,
+            confirmButtonText: "닫기",
+            timer: 2022,
+            timerProgressBar: true
+        });
+    }
+
     axios({
         method: "POST",
         url: `/vote/panel/${vote_id}`,
     }).then((resp) => {
         const data = resp.data;
-        window.alert(data.message);
-    }).catch((err) => {
-        const resp = err.response;
+        Swal.fire({
+            icon: "success",
+            text: data.message,
+            showCancelButton: false,
+            showConfirmButton: true,
+            confirmButtonText: "닫기",
+            timer: 2022,
+            timerProgressBar: true
+        });
+    }).catch((error) => {
+        const resp = error.response;
         if(resp == undefined){
-            window.alert("알 수 없는 오류가 발생했습니다.");
+            err("알 수 없는 오류가 발생했습니다.");
         } else {
-            const data = resp.data;
-            window.alert(data.message);
+            err(resp.data.message);
         }
     });
 }

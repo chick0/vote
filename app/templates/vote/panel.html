@@ -55,6 +55,7 @@
 
 {% block script %}
 <script src="{{ url_for('static', filename='js/axios.min.js') }}"></script>
+<script src="{{ url_for('static', filename='js/sweetalert2.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/status.js') }}"></script>
 <script src="{{ url_for('static', filename='js/options.js') }}"></script>
 <script>
@@ -65,15 +66,40 @@
     render_display();
 
     document.getElementById("add_option").addEventListener("click", () => {
-        const name = window.prompt("새로운 선택지를 입력해주세요.");
-        create_option(name);
+        Swal.fire({
+            icon: "info",
+            title: "새로운 선택지를 입력해주세요.",
+            input: "text",
+        }).then((result) => {
+            if(result.isConfirmed) {
+                create_option(result.value);
+            }
+        });
     });
 
     document.getElementById("vote_start").addEventListener("click", () => start_vote());
     document.getElementById("vote_end").addEventListener("click", () => {
-        if(confirm("투표를 마감하고 결과를 확인하시겠습니까?")){
-            location.href = result_url;
-        }
+        Swal.fire({
+            icon: "question",
+            text: "투표를 마감하고 결과를 확인하시겠습니까?",
+            showCancelButton: true,
+            showConfirmButton: true,
+            confirmButtonText: "네",
+            cancelButtonText: "아니요",
+        }).then((result) => {
+            if(result.isConfirmed) {
+                location.href = result_url;
+            } else {
+                Swal.fire({
+                    icon: "warning",
+                    text: "취소되었습니다.",
+                    showConfirmButton: true,
+                    confirmButtonText: "닫기",
+                    timer: 2022,
+                    timerProgressBar: true
+                });
+            }
+        });
     });
 
     window.onload = () => {

@@ -12,6 +12,18 @@ function render_display(){
 }
 
 function create_option(name) {
+    function err(message) {
+        Swal.fire({
+            icon: "error",
+            text: message,
+            showCancelButton: false,
+            showConfirmButton: true,
+            confirmButtonText: "닫기",
+            timer: 2022,
+            timerProgressBar: true
+        });
+    }
+
     axios({
         method: "POST",
         url: "/api/opt",
@@ -24,16 +36,23 @@ function create_option(name) {
     }).then((resp) => {
         const data = resp.data;
         opts[data.data.option_id] = name;
-        window.alert(data.message);
-
         render_display();
-    }).catch((err) => {
-        const resp = err.response;
+
+        Swal.fire({
+            icon: "info",
+            text: data.message,
+            showCancelButton: false,
+            showConfirmButton: true,
+            confirmButtonText: "닫기",
+            timer: 2022,
+            timerProgressBar: true
+        });
+    }).catch((error) => {
+        const resp = error.response;
         if(resp == undefined){
-            window.alert("알 수 없는 오류가 발생했습니다.");
+            err("알 수 없는 오류가 발생했습니다.");
         } else {
-            const data = resp.data;
-            window.alert(data.message);
+            err(resp.data.message);
         }
     });
 }
