@@ -13,6 +13,17 @@ from app.utils import vote_filter
 bp = Blueprint("api", __name__, url_prefix="/api")
 
 
+@bp.get("/vote")
+@fetch_vote
+def get_vote_status(vote: Vote):
+    return resp(
+        data={
+            "status": vote.started,
+        },
+        code=200
+    )
+
+
 @bp.get("/count")
 @fetch_vote
 def get_session_count(vote: Vote):

@@ -172,9 +172,9 @@ def do(vote_id: int):
         )
 
     if not vote.started:
-        return error(
-            message="지금은 투표에 참여할 수 없습니다.",
-            code=400
+        return render_template(
+            "vote/wait.html",
+            id=vote_id,
         )
 
     s = Session.query.filter_by(
