@@ -42,7 +42,9 @@
                     <div class="column">
                         <a class="button is-link is-light is-fullwidth" href="{{ url_for('dump.to_csv', vote_id=id, title=title) }}">csv 파일 다운로드</a>
                     </div>
-                    <div class="column"></div>
+                    <div class="column">
+                        <a class="button is-danger is-light is-fullwidth" href="{{ url_for('vote.delete', vote_id=id) }}">투표 삭제하기</a>
+                    </div>
                 </div>
             </div>
             <div class="column">

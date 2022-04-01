@@ -277,3 +277,45 @@ def do_post(vote_id: int):
     db.session.commit()
 
     return redirect(url_for("result.end", vote_id=vote.id))
+
+
+@bp.get("/delete/<int:vote_id>")
+def delete(vote_id: int):
+    if session.get(str(vote_id)) != VOTE_ADMIN:
+        return error(
+            message="권한이 없습니다.",
+            code=403
+        )
+
+    vote = Vote.query.filter_by(
+        id=vote_id
+    ).first()
+
+    if vote is None:
+        safe_remove(vote_id)
+        return error(
+            message="등록된 투표가 아닙니다!",
+            code=404
+        )
+
+    if vote.started is not None:
+        return error(
+            message="마감된 투표만 삭제가 가능합니다.",
+            code=400
+        )
+
+    Vote.query.filter_by(
+        id=vote_id
+    ).delete()
+    Session.query.filter_by(
+        vote_id=vote_id
+    ).delete()
+    Option.query.filter_by(
+        vote_id=vote_id
+    ).delete()
+
+    db.session.commit()
+
+    return render_template(
+        "vote/delete.html",
+    )

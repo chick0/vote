@@ -1,0 +1,26 @@
+{% extends 'layout.html' %}
+{% block content %}
+<section class="section">
+    <div class="container">
+        <h1 class="title is-1">투표 삭제</h1>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="content is-large">
+            <p>해당 투표는 삭제되었습니다.</p>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block script %}
+<script>
+    window.onload = () => {
+        setInterval(() => {
+            location.href = "/";
+        }, 2500);
+    };
+</script>
+{% endblock %}
