@@ -59,6 +59,7 @@
 <script src="{{ url_for('static', filename='js/options.js') }}"></script>
 <script>
     const vote_id = {{ id }};
+    const result_url = "{{ url_for('result.panel', vote_id=id) }}";
     let opts = JSON.parse(`{{ opts|safe }}`);
 
     render_display();
@@ -70,14 +71,13 @@
 
     document.getElementById("vote_start").addEventListener("click", () => start_vote());
     document.getElementById("vote_end").addEventListener("click", () => {
-        const url = "{{ url_for('result.panel', vote_id=id) }}";
         if(confirm("투표를 마감하고 결과를 확인하시겠습니까?")){
-            location.href = url;
+            location.href = result_url;
         }
-    })
+    });
 
     window.onload = () => {
         setInterval(update_status, 5000);
-    }
+    };
 </script>
 {% endblock %}

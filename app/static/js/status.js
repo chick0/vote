@@ -10,6 +10,11 @@ function update_status() {
         document.getElementById("total").innerText = data.data.total;
         document.getElementById("selected").innerText = data.data.selected;
         document.getElementById("per").innerText = parseInt(data.data.selected / data.data.max * 100);
+
+        if(data.data.selected == data.data.max) {
+            alert("투표가 마감되었습니다!");
+            location.href = result_url;
+        }
     }).catch((err) => {
         console.error(err);
     })
