@@ -46,6 +46,7 @@
                         <a class="button is-danger is-light is-fullwidth" href="{{ url_for('vote.delete', vote_id=id) }}">투표 삭제하기</a>
                     </div>
                 </div>
+                <a class="button is-warning is-light is-fullwidth" href="{{ url_for('vote.copy', vote_id=id) }}">투표 복제하기</a>
             </div>
             <div class="column">
                 <canvas id="chart"></canvas>

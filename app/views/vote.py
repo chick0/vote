@@ -23,9 +23,7 @@ bp = Blueprint("vote", __name__, url_prefix="/vote")
 @bp.get("")
 def create():
     def to(message: str):
-        return redirect(url_for("index.create",
-                                title=vote.title,
-                                error=message))
+        return redirect(url_for("index.create", title=vote.title, error=message))
 
     vote = Vote()
     vote.title = request.args.get("title", "")[:60]
@@ -320,3 +318,42 @@ def delete(vote_id: int):
     return render_template(
         "vote/delete.html",
     )
+
+
+@bp.get("/copy/<int:vote_id>")
+def copy(vote_id: int):
+    if not session.get(str(vote_id)) == VOTE_ADMIN:
+        return error(
+            message="권한이 없습니다.",
+            code=403
+        )
+
+    old_vote = Vote.query.filter_by(
+        id=vote_id
+    ).first()
+    if old_vote.started is not None:
+        return redirect(url_for("vote.panel", vote_id=vote_id, error="마감된 투표만 복제가 가능합니다."))
+
+    vote = Vote()
+    vote.title = old_vote.title
+    vote.max = old_vote.max
+    vote.started = False
+    vote.code = urandom(2).hex()
+
+    db.session.add(vote)
+    db.session.commit()
+
+    session[str(vote.id)] = VOTE_ADMIN
+    session[f"{vote.id}:vote"] = dict(id=vote.id, title=vote.title)
+
+    for o in Option.query.filter_by(
+        vote_id=vote_id
+    ).all():
+        opt = Option()
+        opt.vote_id = vote.id
+        opt.name = o.name
+
+        db.session.add(opt)
+        db.session.commit()
+
+    return redirect(url_for("vote.panel", vote_id=vote.id))
