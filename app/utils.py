@@ -107,7 +107,7 @@ def fetch_result(vote_id: int) -> list:
         id=vote_id
     ).first()
 
-    drop = v.max - sum(score.values())
+    drop = v.max - sum(score.values()) + score.get(-1, 0)
     result = [
         [
             opt.name,

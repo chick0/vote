@@ -260,16 +260,17 @@ def do_post(vote_id: int):
             code=400
         )
 
-    o = Option.query.filter_by(
-        id=select,
-        vote_id=vote_id
-    ).first()
+    if select != -1:
+        o = Option.query.filter_by(
+            id=select,
+            vote_id=vote_id
+        ).first()
 
-    if o is None:
-        return error(
-            message="올바르지 않은 선택지 입니다.",
-            code=400
-        )
+        if o is None:
+            return error(
+                message="올바르지 않은 선택지 입니다.",
+                code=400
+            )
 
     s.select = select
     s.selected = True

@@ -11,10 +11,13 @@
     <div class="container">
         <form method="post">
         {% for opt in opts %}
-            <p style="margin-bottom: 5px;">
+            <p style="margin-bottom:15px;">
                 <button class="button is-dark is-large is-fullwidth" name="select" value="{{opt.id}}" type="submit">{{ opt.name }}</button>
             </p>
         {% endfor %}
+            <p>
+                <button class="button is-danger is-light is-large is-fullwidth" name="select" value="-1" type="submit">기권</button>
+            </p>
         </form>
     </div>
 </section>    
