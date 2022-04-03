@@ -69,5 +69,6 @@ def vote(vote_id: int, code: str):
     db.session.commit()
 
     session[str(vote_id)] = s.id
+    session[f"{vote_id}:vote"] = dict(id=v.id, title="[참여중] " + v.title)
 
     return redirect(url_for("vote.do", vote_id=vote_id))

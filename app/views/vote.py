@@ -276,6 +276,11 @@ def do_post(vote_id: int):
     s.select = select
     s.selected = True
 
+    try:
+        del session[f"{vote.id}:vote"]
+    except KeyError:
+        pass  # "???"
+
     db.session.commit()
 
     return redirect(url_for("result.end", vote_id=vote.id))
