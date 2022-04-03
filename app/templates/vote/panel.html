@@ -12,7 +12,7 @@
 
         <div class="columns">
             <div class="column">
-                <img class="image" src="{{ url_for('qrcode.join', vote_id=id, code=code) }}">
+                <img id="qrcode" class="image" src="{{ url_for('qrcode.join', vote_id=id, code=code)|safe }}">
             </div>
             <div class="column">
                 <div class="content is-large">
@@ -63,7 +63,9 @@
     const result_url = "{{ url_for('result.panel', vote_id=id) }}";
     let opts = JSON.parse(`{{ opts|safe }}`);
 
-    render_display();
+    document.getElementById("qrcode").addEventListener("click", () => {
+        window.open("{{ url_for('qrcode.join', vote_id=id, code=code)|safe }}");
+    });
 
     document.getElementById("add_option").addEventListener("click", () => {
         Swal.fire({
@@ -103,6 +105,8 @@
     });
 
     window.onload = () => {
+        render_display();
+        update_status();
         setInterval(update_status, 5000);
     };
 </script>
