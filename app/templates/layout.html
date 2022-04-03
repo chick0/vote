@@ -9,10 +9,11 @@
         <meta name="description" content="QR코드로 참여하는 단순 투표 시스템">
         <link rel="canonical" href="{{ request.url_root }}">
         <link rel="stylesheet" href="{{ url_for('static', filename='css/bulma.min.css') }}">
-        <meta name="theme-color" content="#DBDBDB">
+        <meta name="theme-color" content="#FAFAFA">
     </head>
     <body>
         {% block content %}{% endblock %}
+        <section class="section"></section>
         {% block script %}{% endblock %}
     </body>
 </html>
