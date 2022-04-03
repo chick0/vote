@@ -88,6 +88,9 @@ def panel(vote_id: int):
     ).all():
         opts[x.id] = x.name
 
+    if session.get(f"{vote.id}:code", None) is None:
+        session[f"{vote.id}:code"] = vote.code
+
     return render_template(
         "vote/panel.html",
         id=vote.id,

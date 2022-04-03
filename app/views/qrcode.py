@@ -1,6 +1,7 @@
 from io import BytesIO
 
 from flask import Blueprint
+from flask import session
 from flask import request
 from flask import url_for
 from flask import send_file
@@ -9,22 +10,26 @@ from qrcode import make
 bp = Blueprint("qrcode", __name__, url_prefix="/qrcode")
 
 
-def return_none():
+def fail(message: str = "undefined error"):
     return send_file(
-        path_or_file=BytesIO(b""),
+        path_or_file=BytesIO(message.encode("utf-8")),
         mimetype="text/plain"
     ), 400
 
 
 @bp.get("join.png")
 def join():
-    vote_id = request.args.get("vote_id", None)
-    if vote_id is None:
-        return return_none()
+    try:
+        vote_id = int(request.args.get("vote_id"))
+    except (ValueError, TypeError):
+        return fail(message="vote_id is invalid")
 
     code = request.args.get("code", "")
     if len(code) != 4:
-        return return_none()
+        return fail(message="code is invalid")
+
+    if session.get(f"{vote_id}:code", "") != code:
+        return fail(message="fail to verify request")
 
     path = url_for("join.vote", vote_id=vote_id, code=code)
 

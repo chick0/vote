@@ -84,6 +84,7 @@ def safe_remove(vote_id: int):
     for k in [
         str(vote_id),
         str(vote_id) + ":vote",
+        str(vote_id) + ":code",
     ]:
         do_it(key=k)
 
