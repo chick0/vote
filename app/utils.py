@@ -75,10 +75,17 @@ def error(message: str, code: int):
 
 
 def safe_remove(vote_id: int):
-    try:
-        del session[str(vote_id)]
-    except KeyError:
-        pass
+    def do_it(key: str):
+        try:
+            del session[key]
+        except KeyError:
+            pass
+
+    for k in [
+        str(vote_id),
+        str(vote_id) + ":vote",
+    ]:
+        do_it(key=k)
 
 
 def fetch_result(vote_id: int) -> list:
