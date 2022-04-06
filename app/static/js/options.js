@@ -103,8 +103,3 @@ function create_option(name) {
         }
     });
 }
-
-function delete_option(option_id) {
-    // send req to api
-    // return result
-}
