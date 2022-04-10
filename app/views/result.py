@@ -15,6 +15,7 @@ from app.const import VOTE_ADMIN
 from app.utils import error
 from app.utils import fetch_result
 from app.utils import get_colors
+from app.utils import safe_remove
 
 bp = Blueprint("result", __name__, url_prefix="/result")
 
@@ -53,6 +54,10 @@ def panel(vote_id: int):
     vote = Vote.query.filter_by(
         id=vote_id
     ).first()
+
+    if vote is None:
+        safe_remove(vote_id=vote_id)
+        return redirect(url_for("my.votes", error="해당 투표는 서버에서 삭제되었습니다."))
 
     if vote.started is False:
         return redirect(url_for("vote.panel", vote_id=vote_id, error="투표가 시작되지 않았습니다."))
