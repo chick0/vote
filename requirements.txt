@@ -8,13 +8,13 @@ alembic==1.7.7
     # via flask-migrate
 cffi==1.15.0
     # via gevent
-click==8.0.4
+click==8.1.2
     # via flask
 colorama==0.4.4
     # via
     #   click
     #   qrcode
-flask==2.0.3
+flask==2.1.1
     # via
     #   -r requirements.in
     #   flask-migrate
@@ -33,9 +33,9 @@ greenlet==1.1.2
     #   sqlalchemy
 gunicorn==20.1.0
     # via -r requirements.in
-itsdangerous==2.1.1
+itsdangerous==2.1.2
     # via flask
-jinja2==3.0.3
+jinja2==3.1.1
     # via flask
 mako==1.2.0
     # via alembic
@@ -45,19 +45,19 @@ markupsafe==2.1.1
     #   mako
 mysqlclient==2.1.0
     # via -r requirements.in
-pillow==9.0.1
+pillow==9.1.0
     # via qrcode
 pycparser==2.21
     # via cffi
-python-dotenv==0.19.2
+python-dotenv==0.20.0
     # via -r requirements.in
 qrcode[pil]==7.3.1
     # via -r requirements.in
-sqlalchemy==1.4.32
+sqlalchemy==1.4.35
     # via
     #   alembic
     #   flask-sqlalchemy
-werkzeug==2.0.3
+werkzeug==2.1.1
     # via flask
 zope-event==4.5.0
     # via gevent
