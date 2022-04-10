@@ -148,3 +148,23 @@ def fetch_result(vote_id: int) -> list:
     ]
     result.append(['기권', drop, calc_percent(t=drop)])
     return result
+
+
+def get_colors(length: int) -> list:
+    # colors from chart.js
+    #  * https://github.com/chartjs/Chart.js/blob/master/docs/scripts/utils.js#L127
+    colors: list = [
+        'rgb(255, 99, 132)',
+        'rgb(255, 159, 64)',
+        'rgb(255, 205, 86)',
+        'rgb(75, 192, 192)',
+        'rgb(54, 162, 235)',
+        'rgb(153, 102, 255)'
+    ]
+
+    index = 0
+    while (length - 1) > len(colors):
+        colors.append(colors[index])
+        index += 1
+
+    return colors[0:length - 1] + ["rgb(201, 203, 207)"]

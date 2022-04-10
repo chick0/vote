@@ -14,6 +14,7 @@ from app.models import Session
 from app.const import VOTE_ADMIN
 from app.utils import error
 from app.utils import fetch_result
+from app.utils import get_colors
 
 bp = Blueprint("result", __name__, url_prefix="/result")
 
@@ -82,8 +83,5 @@ def panel(vote_id: int):
         # chart data
         labels=[x[0] for x in result],
         data=[x[1] for x in result],
-        colors=[
-            f"rgb({randint(1, 255)}, {randint(1, 255)}, {randint(1, 255)})"
-            for i in range(0, len(result))
-        ]
+        colors=get_colors(length=len(result))
     )
