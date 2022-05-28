@@ -35,18 +35,6 @@
                     {% endfor %}
                     </tbody>
                 </table>
-
-                <a class="button is-info is-light is-large is-fullwidth" href="{{ url_for('index.create') }}">새로운 투표 만들기</a>
-                <br>
-                <div class="columns">
-                    <div class="column">
-                        <a class="button is-link is-light is-fullwidth" href="{{ url_for('dump.to_csv', vote_id=id, title=title) }}">csv 파일 다운로드</a>
-                    </div>
-                    <div class="column">
-                        <a class="button is-danger is-light is-fullwidth" href="{{ url_for('vote.delete', vote_id=id) }}">투표 삭제하기</a>
-                    </div>
-                </div>
-                <a class="button is-warning is-light is-fullwidth" href="{{ url_for('vote.copy', vote_id=id) }}">투표 복제하기</a>
             </div>
             <div class="column">
                 <canvas id="chart"></canvas>

@@ -1,6 +1,5 @@
 __all__ = [
     "api",
-    "dump",
     "index",
     "join",
     "my",
