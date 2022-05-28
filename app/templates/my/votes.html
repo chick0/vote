@@ -14,7 +14,7 @@
         <div class="content is-large">
             <ol>
             {% for vote in votes %}
-                <li><a href="{{ vote['url'] }}">{{ vote['title'] }}</a></li>
+                <li><a href="{{ url_for('vote.do', vote_id=vote.vote_id) }}">{{ vote.title }}</a></li>
             {% endfor %}
             </ol>
         </div>

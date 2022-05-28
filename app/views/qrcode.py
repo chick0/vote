@@ -1,11 +1,14 @@
 from io import BytesIO
 
 from flask import Blueprint
-from flask import session
 from flask import request
 from flask import url_for
 from flask import send_file
 from qrcode import make
+
+from app.models import Vote
+from app.const import VOTE_ADMIN
+from app.utils import get_vote_session
 
 bp = Blueprint("qrcode", __name__, url_prefix="/qrcode")
 
@@ -24,19 +27,36 @@ def join():
     except (ValueError, TypeError):
         return fail(message="vote_id is invalid")
 
-    code = request.args.get("code", "")
-    if len(code) != 4:
-        return fail(message="code is invalid")
+    vs = get_vote_session(vote_id=vote_id)
+    if vs is None:
+        return fail(message="vote session is missing")
 
-    if session.get(f"{vote_id}:code", "") != code:
-        return fail(message="fail to verify request")
+    if vs.session_id != VOTE_ADMIN:
+        return fail(message="only admin can check qrcode image")
 
-    path = url_for("join.vote", vote_id=vote_id, code=code)
+    vote = Vote.query.filter_by(
+        id=vs.vote_id,
+    ).filter(
+        Vote.started != None,
+    ).with_entities(
+        Vote.code
+    ).first()
+
+    if vote is None:
+        return fail(message="deleted vote")
 
     raw_img = BytesIO()
 
     img = make(
-        data=f"{request.scheme}://{request.host}{path}",
+        data="{scheme}://{host}{path}".format(
+            scheme=request.scheme,
+            host=request.host,
+            path=url_for(
+                "join.vote",
+                vote_id=vote_id,
+                code=vote.code
+            )
+        ),
         border=1,
     )
 

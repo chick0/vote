@@ -1,5 +1,4 @@
 from flask import Blueprint
-from flask import session
 from flask import redirect
 from flask import url_for
 
@@ -8,23 +7,30 @@ from app.models import Vote
 from app.models import Session
 from app.const import VOTE_ADMIN
 from app.utils import error
+from app.utils import set_vote_session
+from app.utils import get_vote_session
 
 bp = Blueprint("join", __name__, url_prefix="/join")
 
 
 @bp.get("/<int:vote_id>/<string:code>")
 def vote(vote_id: int, code: str):
-    s = session.get(str(vote_id), None)
-    if s == VOTE_ADMIN:
-        return error(
-            message="투표 관리자는 투표에 참여할 수 없습니다.",
-            code=400
-        )
-    elif s is not None:
+    vs = get_vote_session(
+        vote_id=vote_id
+    )
+
+    if vs is not None:
+        if vs.session_id == VOTE_ADMIN:
+            return error(
+                message="투표 관리자는 투표에 참여할 수 없습니다.",
+                code=400
+            )
+
         q = Session.query.filter_by(
-            id=s,
+            id=vs.session_id,
             vote_id=vote_id,
         ).first()
+
         if q is not None:
             if q.selected is False:
                 return redirect(url_for("vote.do", vote_id=vote_id))
@@ -68,7 +74,10 @@ def vote(vote_id: int, code: str):
     db.session.add(s)
     db.session.commit()
 
-    session[str(vote_id)] = s.id
-    session[f"{vote_id}:vote"] = dict(id=v.id, title="[참여중] " + v.title)
+    set_vote_session(
+        vote_id=v.id,
+        session_id=s.id,
+        title=v.title
+    )
 
     return redirect(url_for("vote.do", vote_id=vote_id))

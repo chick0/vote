@@ -5,7 +5,8 @@ from flask import url_for
 from flask import render_template
 
 from app.models import Vote
-from app.utils import safe_remove
+from app.utils import get_vote_session
+from app.utils import del_vote_session
 
 bp = Blueprint("my", __name__, url_prefix="/my")
 
@@ -15,13 +16,7 @@ def votes():
     return render_template(
         "my/votes.html",
         votes=[
-            {
-                "id": x['id'],
-                "title": x['title'],
-                "url": url_for("my.vote", vote_id=x['id'])
-            } for x in [
-                session[v] for v in session if v.endswith(":vote")
-            ]
+            get_vote_session(vote_id=vote_id) for vote_id in session.keys()
         ]
     )
 
@@ -33,7 +28,7 @@ def vote(vote_id: int):
     ).first()
 
     if target is None:
-        safe_remove(vote_id=vote_id)
+        del_vote_session(vote_id=vote_id)
         return redirect(url_for("my.votes", error="해당 투표는 서버에서 삭제되었습니다."))
 
     if target.started is None:

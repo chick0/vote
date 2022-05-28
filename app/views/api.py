@@ -106,6 +106,7 @@ def delete_option(vote: Vote):
         id=option_id,
         vote_id=vote.id
     ).delete()
+
     db.session.commit()
 
     return resp(

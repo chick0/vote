@@ -12,7 +12,7 @@
 
         <div class="columns">
             <div class="column">
-                <img id="qrcode" class="image" src="{{ url_for('qrcode.join', vote_id=id, code=code)|safe }}">
+                <img id="qrcode" class="image" src="{{ url_for('qrcode.join', vote_id=id) }}">
             </div>
             <div class="column">
                 <div class="content is-large">
@@ -60,7 +60,7 @@
     let opts = JSON.parse(`{{ opts|safe }}`);
 
     document.getElementById("qrcode").addEventListener("click", () => {
-        window.open("{{ url_for('qrcode.join', vote_id=id, code=code)|safe }}");
+        window.open("{{ url_for('qrcode.join', vote_id=id) }}");
     });
 
     document.getElementById("add_option").addEventListener("click", () => {

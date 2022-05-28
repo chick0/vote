@@ -1,8 +1,6 @@
-from random import randint
 from datetime import datetime
 
 from flask import Blueprint
-from flask import session
 from flask import abort
 from flask import redirect
 from flask import url_for
@@ -15,21 +13,20 @@ from app.const import VOTE_ADMIN
 from app.utils import error
 from app.utils import fetch_result
 from app.utils import get_colors
-from app.utils import safe_remove
+from app.utils import get_vote_session
+from app.utils import del_vote_session
 
 bp = Blueprint("result", __name__, url_prefix="/result")
 
 
 @bp.get("/<int:vote_id>")
 def end(vote_id: int):
-    session_id = session.get(str(vote_id), None)
-    if session_id is None:
-        return abort(404)
-    elif session_id == VOTE_ADMIN:
+    vs = get_vote_session(vote_id=vote_id)
+    if vs is None or vs.session_id == VOTE_ADMIN:
         return abort(404)
 
     s = Session.query.filter_by(
-        id=session_id,
+        id=vs.session_id,
         vote_id=vote_id,
     ).first()
     if s is None:
@@ -45,7 +42,8 @@ def end(vote_id: int):
 
 @bp.get("/panel/<int:vote_id>")
 def panel(vote_id: int):
-    if not session.get(str(vote_id)) == VOTE_ADMIN:
+    vs = get_vote_session(vote_id=vote_id)
+    if vs is None or vs.session_id != VOTE_ADMIN:
         return error(
             message="권한이 없습니다.",
             code=403
@@ -56,14 +54,13 @@ def panel(vote_id: int):
     ).first()
 
     if vote is None:
-        safe_remove(vote_id=vote_id)
+        del_vote_session(vote_id=vote_id)
         return redirect(url_for("my.votes", error="해당 투표는 서버에서 삭제되었습니다."))
 
     if vote.started is False:
         return redirect(url_for("vote.panel", vote_id=vote_id, error="투표가 시작되지 않았습니다."))
 
     if vote.started is True:
-        session[f"{vote.id}:vote"] = dict(id=vote.id, title="[마감] " + vote.title)
         vote.started = None
         vote.finished_date = datetime.now()
         db.session.commit()

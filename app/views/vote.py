@@ -3,7 +3,6 @@ from json import dumps
 
 from flask import Blueprint
 from flask import request
-from flask import session
 from flask import redirect
 from flask import url_for
 from flask import render_template
@@ -15,7 +14,9 @@ from app.models import Option
 from app.const import VOTE_ADMIN
 from app.utils import resp
 from app.utils import error
-from app.utils import safe_remove
+from app.utils import set_vote_session
+from app.utils import get_vote_session
+from app.utils import del_vote_session
 
 bp = Blueprint("vote", __name__, url_prefix="/vote")
 
@@ -48,8 +49,11 @@ def create():
     db.session.add(vote)
     db.session.commit()
 
-    session[str(vote.id)] = VOTE_ADMIN
-    session[f"{vote.id}:vote"] = dict(id=vote.id, title=vote.title)
+    set_vote_session(
+        vote_id=vote.id,
+        session_id=VOTE_ADMIN,
+        title=vote.title
+    )
 
     return redirect(
         url_for("vote.panel", vote_id=vote.id)
@@ -58,22 +62,24 @@ def create():
 
 @bp.get("/panel/<int:vote_id>")
 def panel(vote_id: int):
-    s = session.get(str(vote_id))
-    if not s == VOTE_ADMIN:
-        if s is not None:
-            return redirect(url_for("vote.do", vote_id=vote_id))
-
+    vs = get_vote_session(vote_id=vote_id)
+    if vs is None:
+        # 투표 세션 없으면 권한 없음
         return error(
             message="권한이 없습니다.",
             code=403
         )
+    else:
+        # 관리자가 아니라면 선택지로 이동
+        if vs.session_id != VOTE_ADMIN:
+            return redirect(url_for("vote.do", vote_id=vote_id))
 
     vote = Vote.query.filter_by(
         id=vote_id,
     ).first()
 
     if vote is None:
-        safe_remove(vote_id)
+        del_vote_session(vote_id=vote_id)
         return error(
             message="등록된 투표가 아닙니다!",
             code=404
@@ -88,15 +94,11 @@ def panel(vote_id: int):
     ).all():
         opts[x.id] = x.name
 
-    if session.get(f"{vote.id}:code", None) is None:
-        session[f"{vote.id}:code"] = vote.code
-
     return render_template(
         "vote/panel.html",
         id=vote.id,
         title=vote.title,
         max=vote.max,
-        code=vote.code,
         opts=dumps(opts, ensure_ascii=True),
         started=vote.started,
     )
@@ -104,7 +106,8 @@ def panel(vote_id: int):
 
 @bp.post("/panel/<int:vote_id>")
 def panel_post(vote_id: int):
-    if not session.get(str(vote_id)) == VOTE_ADMIN:
+    vs = get_vote_session(vote_id=vote_id)
+    if vs is None or vs.session_id != VOTE_ADMIN:
         return resp(
             message="권한이 없습니다.",
             code=403
@@ -115,7 +118,7 @@ def panel_post(vote_id: int):
     ).first()
 
     if vote is None:
-        safe_remove(vote_id)
+        del_vote_session(vote_id=vote_id)
         return resp(
             message="등록된 투표가 아닙니다.",
             code=403
@@ -146,8 +149,6 @@ def panel_post(vote_id: int):
     vote.started = True
     db.session.commit()
 
-    session[f"{vote.id}:vote"] = dict(id=vote.id, title="[진행중] "+vote.title)
-
     return resp(
         message="이제 투표에 참여할 수 있으며 수정 할 수 없습니다.",
         code=200
@@ -156,18 +157,22 @@ def panel_post(vote_id: int):
 
 @bp.get("/<int:vote_id>")
 def do(vote_id: int):
-    if session.get(str(vote_id)) == VOTE_ADMIN:
+    vs = get_vote_session(vote_id=vote_id)
+    if vs is None:
         return error(
-            message="투표 생성자는 투표에 참여 할 수 없습니다.",
-            code=400
+            message="투표에 참여할 권한이 없습니다.",
+            code=403
         )
+    else:
+        if vs.session_id == VOTE_ADMIN:
+            return redirect(url_for("vote.panel", vote_id=vote_id))
 
     vote = Vote.query.filter_by(
         id=vote_id,
     ).first()
 
     if vote is None:
-        safe_remove(vote_id)
+        del_vote_session(vote_id=vote_id)
         return error(
             message="등록된 투표가 아닙니다!",
             code=404
@@ -180,7 +185,7 @@ def do(vote_id: int):
         )
 
     s = Session.query.filter_by(
-        id=session.get(str(vote_id)),
+        id=vs.session_id,
         vote_id=vote_id,
     ).first()
 
@@ -214,18 +219,22 @@ def do(vote_id: int):
 
 @bp.post("/<int:vote_id>")
 def do_post(vote_id: int):
-    if session.get(str(vote_id)) == VOTE_ADMIN:
+    vs = get_vote_session(vote_id=vote_id)
+    if vs is None:
         return error(
-            message="투표 생성자는 투표에 참여 할 수 없습니다.",
-            code=400
+            message="투표에 참여할 권한이 없습니다.",
+            code=403
         )
+    else:
+        if vs.session_id == VOTE_ADMIN:
+            return redirect(url_for("vote.panel", vote_id=vote_id))
 
     vote = Vote.query.filter_by(
         id=vote_id,
     ).first()
 
     if vote is None:
-        safe_remove(vote_id)
+        del_vote_session(vote_id=vote_id)
         return error(
             message="등록된 투표가 아닙니다!",
             code=404
@@ -238,7 +247,7 @@ def do_post(vote_id: int):
         )
 
     s = Session.query.filter_by(
-        id=session.get(str(vote_id)),
+        id=vs.session_id,
         vote_id=vote_id,
     ).first()
 
@@ -276,11 +285,6 @@ def do_post(vote_id: int):
 
     s.select = select
     s.selected = True
-
-    try:
-        del session[f"{vote.id}:vote"]
-    except KeyError:
-        pass  # "???"
 
     db.session.commit()
 

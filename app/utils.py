@@ -1,4 +1,5 @@
 from functools import wraps
+from collections import namedtuple
 
 from flask import request
 from flask import session
@@ -9,6 +10,15 @@ from app.models import Vote
 from app.models import Session
 from app.models import Option
 from app.const import VOTE_ADMIN
+
+VoteSession = namedtuple(
+    "VoteSession",
+    [
+        'vote_id',
+        'session_id',
+        'title',
+    ]
+)
 
 
 def resp(message: str = "", data: dict or list = None, code: int = 200):
@@ -54,7 +64,12 @@ def check_admin(f):
                 code=400
             )
 
-        if session.get(vote_id) != VOTE_ADMIN:
+        try:
+            vs = get_vote_session(vote_id=int(vote_id))
+        except ValueError:
+            vs = None
+
+        if vs is not None and vs.session_id != VOTE_ADMIN:
             return resp(
                 message="권한이 없습니다.",
                 code=403
@@ -95,21 +110,6 @@ def error(message: str, code: int):
         title="오류",
         message=message,
     ), code
-
-
-def safe_remove(vote_id: int):
-    def do_it(key: str):
-        try:
-            del session[key]
-        except KeyError:
-            pass
-
-    for k in [
-        str(vote_id),
-        str(vote_id) + ":vote",
-        str(vote_id) + ":code",
-    ]:
-        do_it(key=k)
 
 
 def fetch_result(vote_id: int) -> list:
@@ -168,3 +168,25 @@ def get_colors(length: int) -> list:
         index += 1
 
     return colors[0:length - 1] + ["rgb(201, 203, 207)"]
+
+
+def set_vote_session(vote_id: int, title: str, session_id: int or str):
+    session[f'{vote_id}'] = VoteSession(
+        vote_id=vote_id,
+        session_id=session_id,
+        title=title,
+    )._asdict()
+
+
+def get_vote_session(vote_id: int) -> VoteSession or None:
+    try:
+        return VoteSession(**session[f'{vote_id}'])
+    except KeyError:
+        return None
+
+
+def del_vote_session(vote_id: int) -> None:
+    try:
+        del session[f'{vote_id}']
+    except KeyError:
+        pass
