@@ -97,7 +97,8 @@ def panel(vote_id: int):
         title=vote.title,
         max=vote.max,
         code=vote.code,
-        opts=dumps(opts, ensure_ascii=True)
+        opts=dumps(opts, ensure_ascii=True),
+        started=vote.started,
     )
 
 

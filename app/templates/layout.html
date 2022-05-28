@@ -12,8 +12,35 @@
         <meta name="theme-color" content="#FAFAFA">
     </head>
     <body>
+    {% if g.show_navbar is true %}
+        <nav class="navbar container">
+            <div class="navbar-brand">
+                <a class="navbar-item" href="/">투표</a>
+                <a role="button" class="navbar-burger" data-target="navbar">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </a>
+            </div>
+            <div id="navbar" class="navbar-menu">
+                <div class="navbar-start">
+                    <a class="navbar-item" href="/create">
+                        투표 생성
+                    </a>
+                    <a class="navbar-item" href="/my/votes">
+                        내 투표
+                    </a>
+                </div>
+            </div>
+        </nav>
+    {% endif %}
+
         {% block content %}{% endblock %}
         <section class="section"></section>
+
+    {% if g.show_navbar is true %}
+        <script src="{{ url_for('static', filename='js/burger.js') }}"></script>
+    {% endif %}
         {% block script %}{% endblock %}
     </body>
 </html>

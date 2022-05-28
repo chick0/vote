@@ -1,5 +1,6 @@
 from os import environ
 
+from flask import g
 from flask import Flask
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
@@ -35,5 +36,9 @@ def create_app():
             code=404
         )
     )
+
+    @app.before_request
+    def before_request():
+        g.show_navbar = True
 
     return app

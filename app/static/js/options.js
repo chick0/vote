@@ -48,13 +48,13 @@ function render_display(){
     };
 
     Object.keys(opts).forEach((id) => {
-        const li = document.createElement("li");
-        li.appendChild(document.createTextNode(opts[id]));
-        li.setAttribute("data-id", id);
-        li.setAttribute("style", "padding-bottom:20px;");
-        li.addEventListener("click", handler);
-
-        display.appendChild(li);
+        const box = document.createElement("box");
+        box.setAttribute("data-id", id);
+        box.setAttribute("class", "box");
+        box.setAttribute("style", "font-size:1.5rem;");
+        box.appendChild(document.createTextNode(opts[id]));
+        box.addEventListener("click", handler);
+        display.appendChild(box);
     });
 }
 

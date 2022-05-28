@@ -46,10 +46,14 @@ function start_vote(){
         method: "POST",
         url: `/vote/panel/${vote_id}`,
     }).then((resp) => {
-        const data = resp.data;
+        // hide start button
+        document.getElementById("vote_start").classList.add("is-hidden");
+        // show end button
+        document.getElementById("vote_end").classList.remove("is-hidden");
+
         Swal.fire({
             icon: "success",
-            text: data.message,
+            text: resp.data.message,
             showCancelButton: false,
             showConfirmButton: true,
             confirmButtonText: "닫기",

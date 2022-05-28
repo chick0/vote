@@ -31,24 +31,20 @@
 <section class="section">
     <div class="container">
         <h2 class="title is-2">투표 선택지</h2>
-        <div class="content is-large">
-            <ol id="display"></ol>
+        <p class="subtitle">등록된 선택지를 클릭하면 삭제 할 수 있습니다.</p>
+
+        <div class="block">
+            <button id="add_option" class="button is-info is-light is-large">선택지 추가</button>
         </div>
 
-        <button id="add_option" class="button is-info is-light is-large is-fullwidth">선택지 추가</button>
+        <div class="block" id="display"></div>
     </div>
 </section>
 
 <section class="section">
     <div class="container">
-        <div class="columns">
-            <div class="column">
-                <button id="vote_start" class="button is-info is-large is-fullwidth">투표 시작</button>
-            </div>
-            <div class="column">
-                <button id="vote_end" class="button is-dark is-large is-fullwidth">결과 보기</button>
-            </div>
-        </div>
+        <button id="vote_start" class="button is-info is-large is-fullwidth">투표 시작</button>
+        <button id="vote_end" class="button is-dark is-large is-fullwidth">투표 결과 확인</button>
     </div>
 </section>
 {% endblock %}
@@ -108,6 +104,11 @@
         render_display();
         update_status();
         setInterval(update_status, 5000);
+        if({{ started|lower }} == true){
+            document.getElementById("vote_start").classList.add("is-hidden");
+        } else {
+            document.getElementById("vote_end").classList.add("is-hidden");
+        }
     };
 </script>
 {% endblock %}
