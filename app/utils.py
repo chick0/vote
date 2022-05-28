@@ -151,23 +151,20 @@ def fetch_result(vote_id: int) -> list:
 
 
 def get_colors(length: int) -> list:
-    # colors from chart.js
-    #  * https://github.com/chartjs/Chart.js/blob/master/docs/scripts/utils.js#L127
     colors: list = [
-        'rgb(255, 99, 132)',
-        'rgb(255, 159, 64)',
-        'rgb(255, 205, 86)',
-        'rgb(75, 192, 192)',
-        'rgb(54, 162, 235)',
-        'rgb(153, 102, 255)'
+        "#cc0000",
+        "#ff8c00",
+        "#ffcc4d",
+        "#81c147",
+        "#008000",
+        "#0080ff",
+        "#00498c",
+        "#4b0082",
+        "#800080",
+        "#d456dc",
     ]
 
-    index = 0
-    while (length - 1) > len(colors):
-        colors.append(colors[index])
-        index += 1
-
-    return colors[0:length - 1] + ["rgb(201, 203, 207)"]
+    return colors[0:length - 1] + ["#666666"]
 
 
 def set_vote_session(vote_id: int, title: str, session_id: int or str):
