@@ -32,7 +32,7 @@ function start_vote(){
 
             Swal.fire({
                 icon: "success",
-                text: json.data.message,
+                text: json.message,
                 showCancelButton: false,
                 showConfirmButton: true,
                 confirmButtonText: "닫기",
@@ -42,7 +42,7 @@ function start_vote(){
         } else {
             Swal.fire({
                 icon: "error",
-                text: json.data.message,
+                text: json.message,
                 showCancelButton: false,
                 showConfirmButton: true,
                 confirmButtonText: "닫기",
