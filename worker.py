@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from os import environ
+from math import ceil
 from time import time
 from time import sleep
 from sched import scheduler
@@ -67,7 +68,7 @@ def main():
         total_votes = session.query(Vote).count()
         deleted_votes = 0
         per_page = 5
-        total_pages = getattr(__import__("math"), "ceil")(total_votes / per_page)
+        total_pages = ceil(total_votes / per_page)
 
         logger.info(f"total votes : {total_pages}")
         logger.info(f"total pages : {total_pages}")
@@ -76,14 +77,10 @@ def main():
         for index in range(0, total_pages):
             for v in session.query(Vote).filter(Vote.id > last_id).limit(per_page).all():
                 last_id = v.id
-                if type(v.started) == bool:
-                    if now - v.creation_date > timedelta(hours=3):
-                        delete_all(vote_id=v.id)
-                        deleted_votes += 1
-                else:
-                    if now - v.finished_date > timedelta(hours=1):
-                        delete_all(vote_id=v.id)
-                        deleted_votes += 1
+
+                if now - v.creation_date > timedelta(hours=6):
+                    delete_all(vote_id=v.id)
+                    deleted_votes += 1
 
         logger.info(f"{deleted_votes} votes deleted")
 
