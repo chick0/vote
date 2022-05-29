@@ -1,16 +1,12 @@
 function update_status(){
-    axios({
-        method: "GET",
-        url: "/api/vote",
-        params: {
-            vote_id: vote_id,
-        },
-    }).then((resp) => {
-        const data = resp.data;
-        if(data.data.status) {
+    fetch(`/api/vote?vote_id=${vote_id}`).then((resp) => resp.json()).then((json) => {
+        if(json.message.length != 0){
+            clearInterval(work_id);
+            window.alert(json.message);
+        }
+
+        if(json.data.status === true) {
             location.reload();
         }
-    }).catch((err) => {
-        console.error(err);
     });
 }

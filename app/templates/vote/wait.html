@@ -17,13 +17,13 @@
 {% endblock %}
 
 {% block script %}
-<script src="{{ url_for('static', filename='js/axios.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/wait.js') }}"></script>
 <script>
     const vote_id = {{ id }};
+    let work_id = undefined;
     window.onload = () => {
         update_status();
-        setInterval(update_status, 3500);
+        work_id = setInterval(update_status, 3500);
     };
 </script>
 {% endblock %}

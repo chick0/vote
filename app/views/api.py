@@ -110,6 +110,6 @@ def delete_option(vote: Vote):
     db.session.commit()
 
     return resp(
-        message="해당 선택지를 삭제했습니다.",
+        # message="해당 선택지를 삭제했습니다.",
         code=200
     )

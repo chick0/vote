@@ -1,16 +1,4 @@
 function render_display(){
-    function err(message) {
-        Swal.fire({
-            icon: "error",
-            text: message,
-            showCancelButton: false,
-            showConfirmButton: true,
-            confirmButtonText: "닫기",
-            timer: 2022,
-            timerProgressBar: true
-        });
-    }
-
     const display = document.getElementById("display");
     display.innerHTML = "";
 
@@ -25,26 +13,26 @@ function render_display(){
             cancelButtonText: "아니요",
         }).then((result) => {
             if(result.isConfirmed){
-                axios({
+                fetch(`/api/opt?vote_id=${vote_id}&option_id=${target.dataset.id}`, {
                     method: "DELETE",
-                    url: "/api/opt",
-                    params: {
-                        vote_id: vote_id,
-                        option_id: target.dataset.id,
-                    },
-                }).then(() => {
-                    delete opts[target.dataset.id]
-                    render_display();
-                }).catch((error) => {
-                    const resp = error.response;
-                    if(resp == undefined){
-                        err("알 수 없는 오류가 발생했습니다.");
+                }).then((resp) => resp.json()).then((json) => {
+                    if(json.code == 200){
+                        delete opts[target.dataset.id];
+                        render_display();
                     } else {
-                        err(resp.data.message);
+                        Swal.fire({
+                            icon: "error",
+                            text: json.message,
+                            showCancelButton: false,
+                            showConfirmButton: true,
+                            confirmButtonText: "닫기",
+                            timer: 2022,
+                            timerProgressBar: true
+                        });
                     }
                 });
             }
-        });    
+        });
     };
 
     Object.keys(opts).forEach((id) => {
@@ -59,47 +47,38 @@ function render_display(){
 }
 
 function create_option(name) {
-    function err(message) {
-        Swal.fire({
-            icon: "error",
-            text: message,
-            showCancelButton: false,
-            showConfirmButton: true,
-            confirmButtonText: "닫기",
-            timer: 2022,
-            timerProgressBar: true
-        });
-    }
-
-    axios({
+    fetch(`/api/opt?vote_id=${vote_id}`, {
         method: "POST",
-        url: "/api/opt",
-        params: {
-            vote_id: vote_id,
+        headers: {
+            'Content-Type': 'application/json'
         },
-        data: {
-            name: name
-        }
-    }).then((resp) => {
-        const data = resp.data;
-        opts[data.data.option_id] = name;
-        render_display();
+        body: JSON.stringify({
+            name
+        })
+    }).then((resp) => resp.json()).then((json) => {
+        if(json.code == 201){
+            Swal.fire({
+                icon: "success",
+                text: json.message,
+                showCancelButton: false,
+                showConfirmButton: true,
+                confirmButtonText: "닫기",
+                timer: 2022,
+                timerProgressBar: true
+            });
 
-        Swal.fire({
-            icon: "info",
-            text: data.message,
-            showCancelButton: false,
-            showConfirmButton: true,
-            confirmButtonText: "닫기",
-            timer: 2022,
-            timerProgressBar: true
-        });
-    }).catch((error) => {
-        const resp = error.response;
-        if(resp == undefined){
-            err("알 수 없는 오류가 발생했습니다.");
+            opts[json.data.option_id] = name;
+            render_display();
         } else {
-            err(resp.data.message);
+            Swal.fire({
+                icon: "info",
+                text: json.message,
+                showCancelButton: false,
+                showConfirmButton: true,
+                confirmButtonText: "닫기",
+                timer: 2022,
+                timerProgressBar: true
+            });
         }
     });
 }

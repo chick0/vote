@@ -25,6 +25,7 @@ def resp(message: str = "", data: dict or list = None, code: int = 200):
     return jsonify({
         "message": message,
         "data": data,
+        "code": code,
     }), code
 
 
