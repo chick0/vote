@@ -15,13 +15,13 @@
                 <img id="qrcode" class="image" src="{{ url_for('qrcode.join', vote_id=id) }}">
             </div>
             <div class="column">
-                <div class="content is-large">
-                    <ul>
-                        <li>최대 참여인원 : {{max}}명</li>
-                        <li>투표 참여인원 : <span id="total">-</span>명</li>
-                        <li>투표 완료인원 : <span id="selected">-</span>명</li>
-                        <li>투표 참여율 : <span id="per">-</span>%</li>
-                    </ul>
+                <div class="box" style="font-size:1.3rem;">
+                    <p>최대 참여인원 : <b>{{ max }}</b>명</p>
+                    <p>투표 참여인원 : <b id="total">-</b>명</p>
+                </div>
+                <div class="box" style="font-size:1.3rem;">
+                    <p>투표 완료인원 : <b id="selected">-</b>명</p>
+                    <p>투표 참여율 : <b id="per">-</b>%</p>
                 </div>
             </div>
         </div>
