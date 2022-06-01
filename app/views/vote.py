@@ -184,12 +184,11 @@ def do(vote_id: int):
         )
 
     if vote.started is None:
-        return error(
-            message="마감된 투표입니다.",
-            code=400
-        )
+        # 투표가 마감된 경우 결과 페이지로 이동
+        return redirect(url_for("result.end", vote_id=vote.id))
 
-    if not vote.started:
+    if vote.started is False:
+        # 투표가 시작되지 않음
         return render_template(
             "vote/wait.html",
             id=vote_id,
@@ -207,10 +206,8 @@ def do(vote_id: int):
         )
 
     if s.selected:
-        return error(
-            message="이미 투표에 참여했습니다.",
-            code=400
-        )
+        # 이미 투표에 참여한 경우 결과 페이지로 이동
+        return redirect(url_for("result.end", vote_id=vote.id))
 
     opts = Option.query.filter_by(
         vote_id=vote.id
@@ -251,11 +248,13 @@ def do_post(vote_id: int):
             code=404
         )
 
-    if not vote.started:
-        return error(
-            message="지금은 투표에 참여할 수 없습니다.",
-            code=400
-        )
+    if vote.started is None:
+        # 투표가 마감된 경우 결과 페이지로 이동
+        return redirect(url_for("result.end", vote_id=vote.id))
+
+    if vote.started is False:
+        # 투표가 시작되지 않음
+        return redirect(url_for("vote.do", vote_id=vote_id))
 
     s = Session.query.filter_by(
         id=vs.session_id,
@@ -269,10 +268,8 @@ def do_post(vote_id: int):
         )
 
     if s.selected:
-        return error(
-            message="이미 투표에 참여했습니다.",
-            code=400
-        )
+        # 이미 투표에 참여한 경우 결과 페이지로 이동
+        return redirect(url_for("result.end", vote_id=vote.id))
 
     try:
         select = int(request.form.get("select"))
