@@ -6,6 +6,7 @@ from flask import request
 from flask import redirect
 from flask import url_for
 from flask import render_template
+from sqlalchemy.exc import IntegrityError
 
 from app import db
 from app.models import Vote
@@ -49,10 +50,13 @@ def create():
         return to(message="투표에 참가할 수 있는 인원이 없습니다.")
 
     vote.started = False
-    vote.code = urandom(2).hex()
+    vote.code = urandom(3).hex()
 
-    db.session.add(vote)
-    db.session.commit()
+    try:
+        db.session.add(vote)
+        db.session.commit()
+    except IntegrityError:
+        return to(message="내부 오류가 발생했습니다. 다시 시도해주세요.")
 
     set_vote_session(
         vote_id=vote.id,

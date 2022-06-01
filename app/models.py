@@ -42,8 +42,9 @@ class Vote(db.Model):
     )
 
     code = db.Column(
-        db.String(4),
-        nullable=False
+        db.String(6),
+        unique=True,
+        nullable=True
     )
 
     def __repr__(self):
