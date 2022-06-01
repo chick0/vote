@@ -15,10 +15,7 @@ bp = Blueprint("join", __name__, url_prefix="/join")
 
 @bp.get("/<int:vote_id>/<string:code>")
 def vote(vote_id: int, code: str):
-    vs = get_vote_session(
-        vote_id=vote_id
-    )
-
+    vs = get_vote_session(vote_id=vote_id)
     if vs is not None:
         if vs.session_id == VOTE_ADMIN:
             return error(
@@ -26,19 +23,7 @@ def vote(vote_id: int, code: str):
                 code=400
             )
 
-        q = Session.query.filter_by(
-            id=vs.session_id,
-            vote_id=vote_id,
-        ).first()
-
-        if q is not None:
-            if q.selected is False:
-                return redirect(url_for("vote.do", vote_id=vote_id))
-
-        return error(
-            message="이미 투표하셨습니다.",
-            code=400
-        )
+        return redirect(url_for("vote.do", vote_id=vote_id))
 
     v = Vote.query.filter_by(
         id=vote_id,

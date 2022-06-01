@@ -183,6 +183,12 @@ def do(vote_id: int):
             code=404
         )
 
+    if vote.started is None:
+        return error(
+            message="마감된 투표입니다.",
+            code=400
+        )
+
     if not vote.started:
         return render_template(
             "vote/wait.html",
