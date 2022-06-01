@@ -53,7 +53,6 @@ def join():
             host=request.host,
             path=url_for(
                 "join.vote",
-                vote_id=vote_id,
                 code=vote.code
             )
         ),

@@ -10,23 +10,12 @@ from app.utils import error
 from app.utils import set_vote_session
 from app.utils import get_vote_session
 
-bp = Blueprint("join", __name__, url_prefix="/join")
+bp = Blueprint("join", __name__, url_prefix="/j")
 
 
-@bp.get("/<int:vote_id>/<string:code>")
-def vote(vote_id: int, code: str):
-    vs = get_vote_session(vote_id=vote_id)
-    if vs is not None:
-        if vs.session_id == VOTE_ADMIN:
-            return error(
-                message="투표 관리자는 투표에 참여할 수 없습니다.",
-                code=400
-            )
-
-        return redirect(url_for("vote.do", vote_id=vote_id))
-
+@bp.get("/<string:code>")
+def vote(code: str):
     v = Vote.query.filter_by(
-        id=vote_id,
         code=code
     ).first()
 
@@ -36,6 +25,16 @@ def vote(vote_id: int, code: str):
             code=404
         )
 
+    vs = get_vote_session(vote_id=v.id)
+    if vs is not None:
+        if vs.session_id == VOTE_ADMIN:
+            return error(
+                message="투표 관리자는 투표에 참여할 수 없습니다.",
+                code=400
+            )
+
+        return redirect(url_for("vote.do", vote_id=v.id))
+
     if v.started is None:
         return error(
             message="마감된 투표입니다.",
@@ -43,7 +42,7 @@ def vote(vote_id: int, code: str):
         )
 
     c = Session.query.filter_by(
-        vote_id=vote_id
+        vote_id=v.id
     ).count()
 
     if c >= v.max:
@@ -65,4 +64,4 @@ def vote(vote_id: int, code: str):
         title=v.title
     )
 
-    return redirect(url_for("vote.do", vote_id=vote_id))
+    return redirect(url_for("vote.do", vote_id=v.id))
