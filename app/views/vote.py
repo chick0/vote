@@ -22,17 +22,22 @@ bp = Blueprint("vote", __name__, url_prefix="/vote")
 
 
 @bp.get("")
+def to_form():
+    return redirect(url_for("index.create"))
+
+
+@bp.post("")
 def create():
     def to(message: str):
         return redirect(url_for("index.create", title=vote.title, error=message))
 
     vote = Vote()
-    vote.title = request.args.get("title", "")[:60]
+    vote.title = request.form.get("title", "")[:60]
     if len(vote.title) == 0:
         vote.title = "제목 없는 투표"
 
     try:
-        vote.max = int(request.args.get("max", "undefined"))
+        vote.max = int(request.form.get("max", "undefined"))
     except ValueError:
         return to(message="투표 참여 인원이 숫자가 아닙니다.")
 
