@@ -36,9 +36,7 @@
         {% block content %}{% endblock %}
         <section class="section"></section>
 
-    {% if g.show_navbar is true %}
         <script src="{{ url_for('static', filename='js/burger.js') }}"></script>
-    {% endif %}
         {% block script %}{% endblock %}
     </body>
 </html>
