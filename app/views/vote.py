@@ -110,6 +110,14 @@ def panel(vote_id: int):
         max=vote.max,
         opts=dumps(opts, ensure_ascii=True),
         started=vote.started,
+        join_url="{scheme}://{host}{path}".format(
+            scheme=request.scheme,
+            host=request.host,
+            path=url_for(
+                "join.vote",
+                code=vote.code
+            )
+        )
     )
 
 

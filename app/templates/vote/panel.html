@@ -23,6 +23,7 @@
                     <p>투표 완료인원 : <b id="selected">-</b>명</p>
                     <p>투표 참여율 : <b id="per">-</b>%</p>
                 </div>
+                <button class="button is-info is-light is-large is-fullwidth copy" data-clipboard-text="{{ join_url }}">링크 복사하기</button>
             </div>
         </div>
     </div>
@@ -50,13 +51,28 @@
 {% endblock %}
 
 {% block script %}
+<script src="{{ url_for('static', filename='js/clipboard.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/sweetalert2.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/status.js') }}"></script>
 <script src="{{ url_for('static', filename='js/options.js') }}"></script>
 <script>
     const vote_id = {{ id }};
     const result_url = "{{ url_for('result.panel', vote_id=id) }}";
+    const clipboard = new ClipboardJS(".copy");
     let opts = JSON.parse(`{{ opts|safe }}`);
+
+    clipboard.on("success", (e) => {
+        e.clearSelection();
+        Swal.fire({
+            icon: "info",
+            text: "복사되었습니다!",
+            showCancelButton: false,
+            showConfirmButton: true,
+            confirmButtonText: "닫기",
+            timer: 2022,
+            timerProgressBar: true
+        });
+    });
 
     document.getElementById("qrcode").addEventListener("click", () => {
         window.open("{{ url_for('qrcode.join', vote_id=id) }}");
