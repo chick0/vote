@@ -114,7 +114,7 @@ def panel(vote_id: int):
             scheme=request.scheme,
             host=request.host,
             path=url_for(
-                "join.vote",
+                "join.click",
                 code=vote.code
             )
         )

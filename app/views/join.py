@@ -1,6 +1,7 @@
 from flask import Blueprint
 from flask import redirect
 from flask import url_for
+from flask import render_template
 
 from app import db
 from app.models import Vote
@@ -11,6 +12,14 @@ from app.utils import set_vote_session
 from app.utils import get_vote_session
 
 bp = Blueprint("join", __name__, url_prefix="/j")
+
+
+@bp.get("/c/<string:code>")
+def click(code: str):
+    return render_template(
+        "join/click.html",
+        url=url_for("join.vote", code=code)
+    )
 
 
 @bp.get("/<string:code>")
