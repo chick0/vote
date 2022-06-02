@@ -41,6 +41,7 @@ def end(vote_id: int):
 
     return render_template(
         "result/end.html",
+        id=vote_id
     )
 
 

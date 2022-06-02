@@ -4,6 +4,7 @@ __all__ = [
     "join",
     "my",
     "qrcode",
+    "restart",
     "result",
     "vote",
 ]

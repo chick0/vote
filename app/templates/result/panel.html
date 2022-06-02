@@ -35,6 +35,8 @@
                     {% endfor %}
                     </tbody>
                 </table>
+
+                <a class="button is-link is-large is-fullwidth" href="{{ url_for('restart.panel', vote_id=id) }}">다시 투표하기</a>
             </div>
             <div class="column">
                 <canvas id="chart"></canvas>
