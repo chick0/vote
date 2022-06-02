@@ -5,10 +5,10 @@ from app import db
 from app.models import Vote
 from app.models import Session
 from app.models import Option
-from app.utils import resp
-from app.utils import check_admin
-from app.utils import fetch_vote
-from app.utils import vote_filter
+from api.utils import resp
+from api.utils import check_admin
+from api.utils import fetch_vote
+from api.utils import vote_filter
 
 bp = Blueprint("api", __name__, url_prefix="/api")
 

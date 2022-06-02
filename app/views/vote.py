@@ -13,7 +13,7 @@ from app.models import Vote
 from app.models import Session
 from app.models import Option
 from app.const import VOTE_ADMIN
-from app.utils import resp
+from api.utils import resp
 from app.utils import error
 from app.utils import set_vote_session
 from app.utils import get_vote_session
