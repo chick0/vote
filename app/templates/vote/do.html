@@ -4,6 +4,11 @@
     <div class="container">
         <h1 class="title is-1">투표 참여</h1>
         <p class="subtitle">{{ title }}</p>
+    {% if error is not none %}
+        <div class="notification is-danger">
+            {{ error }}
+        </div>
+    {% endif %}
     </div>
 </section>
 

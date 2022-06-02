@@ -1,4 +1,5 @@
 from flask import Blueprint
+from flask import abort
 from flask import redirect
 from flask import url_for
 from flask import render_template
@@ -29,10 +30,7 @@ def vote(code: str):
     ).first()
 
     if v is None:
-        return error(
-            message="등록된 투표가 아닙니다.",
-            code=404
-        )
+        return abort(404)
 
     vs = get_vote_session(vote_id=v.id)
     if vs is not None:

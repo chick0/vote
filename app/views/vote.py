@@ -2,6 +2,7 @@ from os import urandom
 from json import dumps
 
 from flask import Blueprint
+from flask import abort
 from flask import request
 from flask import redirect
 from flask import url_for
@@ -14,7 +15,6 @@ from app.models import Session
 from app.models import Option
 from app.const import VOTE_ADMIN
 from api.utils import resp
-from app.utils import error
 from app.utils import set_vote_session
 from app.utils import get_vote_session
 from app.utils import del_vote_session
@@ -74,10 +74,7 @@ def panel(vote_id: int):
     vs = get_vote_session(vote_id=vote_id)
     if vs is None:
         # 투표 세션 없으면 권한 없음
-        return error(
-            message="권한이 없습니다.",
-            code=403
-        )
+        return abort(403)
     else:
         # 관리자가 아니라면 선택지로 이동
         if vs.session_id != VOTE_ADMIN:
@@ -89,10 +86,7 @@ def panel(vote_id: int):
 
     if vote is None:
         del_vote_session(vote_id=vote_id)
-        return error(
-            message="등록된 투표가 아닙니다!",
-            code=404
-        )
+        return abort(404)
 
     if vote.started is None:
         return redirect(url_for("result.panel", vote_id=vote_id))
@@ -176,10 +170,7 @@ def panel_post(vote_id: int):
 def do(vote_id: int):
     vs = get_vote_session(vote_id=vote_id)
     if vs is None:
-        return error(
-            message="투표에 참여할 권한이 없습니다.",
-            code=403
-        )
+        return abort(403)
     else:
         if vs.session_id == VOTE_ADMIN:
             return redirect(url_for("vote.panel", vote_id=vote_id))
@@ -190,10 +181,7 @@ def do(vote_id: int):
 
     if vote is None:
         del_vote_session(vote_id=vote_id)
-        return error(
-            message="등록된 투표가 아닙니다!",
-            code=404
-        )
+        return abort(404)
 
     if vote.started is None:
         # 투표가 마감된 경우 결과 페이지로 이동
@@ -212,10 +200,8 @@ def do(vote_id: int):
     ).first()
 
     if s is None:
-        return error(
-            message="투표에 참여할 권한이 없습니다.",
-            code=403
-        )
+        del_vote_session(vote_id=vote_id)
+        return abort(403)
 
     if s.selected:
         # 이미 투표에 참여한 경우 결과 페이지로 이동
@@ -233,18 +219,19 @@ def do(vote_id: int):
                 "id": x.id,
                 "name": x.name,
             } for x in opts
-        ]
+        ],
+        error=request.args.get("error")
     )
 
 
 @bp.post("/<int:vote_id>")
 def do_post(vote_id: int):
+    def to(message: str):
+        return redirect(url_for("vote.do", vote_id=vote_id, error=message))
+
     vs = get_vote_session(vote_id=vote_id)
     if vs is None:
-        return error(
-            message="투표에 참여할 권한이 없습니다.",
-            code=403
-        )
+        return abort(403)
     else:
         if vs.session_id == VOTE_ADMIN:
             return redirect(url_for("vote.panel", vote_id=vote_id))
@@ -255,10 +242,7 @@ def do_post(vote_id: int):
 
     if vote is None:
         del_vote_session(vote_id=vote_id)
-        return error(
-            message="등록된 투표가 아닙니다!",
-            code=404
-        )
+        return abort(404)
 
     if vote.started is None:
         # 투표가 마감된 경우 결과 페이지로 이동
@@ -274,10 +258,8 @@ def do_post(vote_id: int):
     ).first()
 
     if s is None:
-        return error(
-            message="투표에 참여할 권한이 없습니다",
-            code=403
-        )
+        del_vote_session(vote_id=vote_id)
+        return abort(403)
 
     if s.selected:
         # 이미 투표에 참여한 경우 결과 페이지로 이동
@@ -286,10 +268,7 @@ def do_post(vote_id: int):
     try:
         select = int(request.form.get("select"))
     except (TypeError, ValueError):
-        return error(
-            message="선택 정보가 올바르지 않습니다.",
-            code=400
-        )
+        return to(message="선택 정보가 올바르지 않습니다.")
 
     if select != -1:
         o = Option.query.filter_by(
@@ -298,10 +277,7 @@ def do_post(vote_id: int):
         ).first()
 
         if o is None:
-            return error(
-                message="올바르지 않은 선택지 입니다.",
-                code=400
-            )
+            return to(message="올바르지 않은 선택지 입니다.")
 
     s.select = select
     s.selected = True
