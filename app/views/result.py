@@ -10,7 +10,6 @@ from app import db
 from app.models import Vote
 from app.models import Session
 from app.const import VOTE_ADMIN
-from app.utils import error
 from app.utils import fetch_result
 from app.utils import get_colors
 from app.utils import get_vote_session
@@ -22,15 +21,20 @@ bp = Blueprint("result", __name__, url_prefix="/result")
 @bp.get("/<int:vote_id>")
 def end(vote_id: int):
     vs = get_vote_session(vote_id=vote_id)
-    if vs is None or vs.session_id == VOTE_ADMIN:
-        return abort(404)
+    if vs is None:
+        return abort(403)
+
+    if vs.session_id == VOTE_ADMIN:
+        return redirect(url_for("result.panel", vote_id=vote_id))
 
     s = Session.query.filter_by(
         id=vs.session_id,
         vote_id=vote_id,
     ).first()
+
     if s is None:
-        return abort(404)
+        del_vote_session(vote_id=vote_id)
+        return abort(403)
 
     if s.selected is False:
         return redirect(url_for("vote.do", vote_id=vote_id))
@@ -44,10 +48,7 @@ def end(vote_id: int):
 def panel(vote_id: int):
     vs = get_vote_session(vote_id=vote_id)
     if vs is None or vs.session_id != VOTE_ADMIN:
-        return error(
-            message="권한이 없습니다.",
-            code=403
-        )
+        return abort(403)
 
     vote = Vote.query.filter_by(
         id=vote_id

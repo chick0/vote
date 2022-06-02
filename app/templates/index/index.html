@@ -4,6 +4,11 @@
     <div class="container">
         <h1 class="title is-1">투표</h1>
         <p class="subtitle">QR코드로 참여하는 단순 투표 시스템</p>
+    {% if error is not none %}
+        <div class="notification is-danger">
+            {{ error }}
+        </div>
+    {% endif %}
         <div class="block">
             <a class="button is-link is-large" href="/create">새로운 투표 만들기</a>
         </div>
