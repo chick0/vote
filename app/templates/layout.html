@@ -12,7 +12,6 @@
         <meta name="theme-color" content="#FAFAFA">
     </head>
     <body>
-    {% if g.show_navbar is true %}
         <nav class="navbar container">
             <div class="navbar-brand">
                 <a class="navbar-item" href="/">투표</a>
@@ -33,7 +32,6 @@
                 </div>
             </div>
         </nav>
-    {% endif %}
 
         {% block content %}{% endblock %}
         <section class="section"></section>
