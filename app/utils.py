@@ -1,5 +1,7 @@
+from os import urandom
 from collections import namedtuple
 
+from flask import request
 from flask import session
 from flask import render_template
 
@@ -15,6 +17,26 @@ VoteSession = namedtuple(
         'title',
     ]
 )
+
+
+def set_message(message: str) -> str:
+    message_id = urandom(4).hex()
+    session[message_id] = message
+    return message_id
+
+
+def get_message(key: str = "error") -> str or None:
+    message_id = request.args.get(key)
+    if message_id is None:
+        return None
+
+    message = session.get(message_id)
+
+    if message is None:
+        return None
+
+    del session[message_id]
+    return message
 
 
 def error(message: str, code: int):
