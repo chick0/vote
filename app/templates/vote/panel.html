@@ -5,7 +5,7 @@
         <h1 class="title is-1">{{ title }}</h1>
     {% set error = request.args.get("error") %}
     {% if error != none %}
-        <div class="notification is-danger is-light">
+        <div class="notification is-danger">
             {{ error }}
         </div>
     {% endif %}
