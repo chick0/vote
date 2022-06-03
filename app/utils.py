@@ -1,4 +1,5 @@
 from os import urandom
+from random import randint
 from collections import namedtuple
 
 from flask import request
@@ -86,20 +87,19 @@ def fetch_result(vote_id: int) -> list:
 
 
 def get_colors(length: int) -> list:
-    colors: list = [
-        "#cc0000",
-        "#ff8c00",
-        "#ffcc4d",
-        "#81c147",
-        "#008000",
-        "#0080ff",
-        "#00498c",
-        "#4b0082",
-        "#800080",
-        "#d456dc",
-    ]
+    colors = []
+    for i in range(0, length - 1):
+        colors.append(
+            "rgb({R},{G},{B})".format(
+                R=randint(50, 250),
+                G=randint(50, 250),
+                B=randint(50, 250),
+            )
+        )
 
-    return colors[0:length - 1] + ["#666666"]
+    # 기권 색깔
+    colors.append("#666666")
+    return colors
 
 
 def set_vote_session(vote_id: int, title: str, session_id: int or str):
