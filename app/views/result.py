@@ -10,6 +10,7 @@ from app import db
 from app.models import Vote
 from app.models import Session
 from app.const import VOTE_ADMIN
+from app.utils import set_message
 from app.utils import fetch_result
 from app.utils import get_colors
 from app.utils import get_vote_session
@@ -57,10 +58,12 @@ def panel(vote_id: int):
 
     if vote is None:
         del_vote_session(vote_id=vote_id)
-        return redirect(url_for("my.votes", error="해당 투표는 서버에서 삭제되었습니다."))
+        message_id = set_message(message="해당 투표는 서버에서 삭제되었습니다.")
+        return redirect(url_for("my.votes", error=message_id))
 
     if vote.started is False:
-        return redirect(url_for("vote.panel", vote_id=vote_id, error="투표가 시작되지 않았습니다."))
+        message_id = set_message(message="투표가 시작되지 않았습니다.")
+        return redirect(url_for("vote.panel", vote_id=vote_id, error=message_id))
 
     if vote.started is True:
         vote.started = None

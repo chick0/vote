@@ -15,6 +15,8 @@ from app.models import Session
 from app.models import Option
 from app.const import VOTE_ADMIN
 from api.utils import resp
+from app.utils import set_message
+from app.utils import get_message
 from app.utils import set_vote_session
 from app.utils import get_vote_session
 from app.utils import del_vote_session
@@ -30,7 +32,8 @@ def to_form():
 @bp.post("")
 def create():
     def to(message: str):
-        return redirect(url_for("index.create", title=vote.title, error=message))
+        message_id = set_message(message=message)
+        return redirect(url_for("index.create", title=vote.title, error=message_id))
 
     vote = Vote()
     vote.title = request.form.get("title", "")[:60]
@@ -101,6 +104,7 @@ def panel(vote_id: int):
         "vote/panel.html",
         id=vote.id,
         title=vote.title,
+        error=get_message(),
         max=vote.max,
         opts=dumps(opts, ensure_ascii=True),
         started=vote.started,
@@ -220,14 +224,15 @@ def do(vote_id: int):
                 "name": x.name,
             } for x in opts
         ],
-        error=request.args.get("error")
+        error=get_message()
     )
 
 
 @bp.post("/<int:vote_id>")
 def do_post(vote_id: int):
     def to(message: str):
-        return redirect(url_for("vote.do", vote_id=vote_id, error=message))
+        message_id = set_message(message=message)
+        return redirect(url_for("vote.do", vote_id=vote_id, error=message_id))
 
     vs = get_vote_session(vote_id=vote_id)
     if vs is None:

@@ -1,7 +1,6 @@
 from os import environ
 
 from flask import Flask
-from flask import redirect
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
@@ -28,10 +27,19 @@ def create_app():
     for view in views.__all__:
         app.register_blueprint(getattr(getattr(views, view), "bp"))
 
-    for code in [403, 404, 405]:
+    from flask import url_for
+    from flask import redirect
+    from app.utils import set_message
+    from app.const import ERROR
+
+    def on_error(error_code: int):
+        message_id = set_message(message=ERROR[error_code])
+        return redirect(url_for("index.index", error=message_id))
+
+    for code in ERROR:
         app.register_error_handler(
             code_or_exception=code,
-            f=lambda e: redirect(f"/?e={e.code}")
+            f=lambda e: on_error(error_code=e.code)
         )
 
     return app

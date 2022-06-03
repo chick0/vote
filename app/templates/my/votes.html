@@ -4,7 +4,6 @@
     <div class="container">
         <h1 class="title is-1">내 투표</h1>
         <p class="subtitle">참여 중인 투표 목록을 확인할 수 있습니다.</p>
-    {% set error = request.args.get("error") %}
     {% if error != none %}
         <div class="notification is-danger">
             {{ error }}
