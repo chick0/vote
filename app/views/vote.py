@@ -157,7 +157,7 @@ def panel_post(vote_id: int):
 
     if opts < 2:
         return resp(
-            message="투표를 시작하려면 적어도 2개의 선택지를 등록해야 합니다.",
+            message="투표를 시작하려면 2개의 선택지를 등록해야 합니다.",
             code=400
         )
 
