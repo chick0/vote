@@ -45,7 +45,7 @@ def init_scheduler():
 
     @scheduler.scheduled_job(
         "cron",
-        minute="*/1",
+        hour="*/1",
         id="vote_clean_up",
         name="remove expired vote",
     )
