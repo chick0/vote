@@ -1,5 +1,6 @@
 from os import urandom
 from json import dumps
+from random import shuffle
 
 from flask import Blueprint
 from flask import abort
@@ -214,6 +215,7 @@ def do(vote_id: int):
     opts = Option.query.filter_by(
         vote_id=vote.id
     ).all()
+    shuffle(opts)
 
     return render_template(
         "vote/do.html",
