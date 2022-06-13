@@ -9,10 +9,13 @@
             {{ error }}
         </div>
     {% endif %}
-        <div class="content">
+        <div class="content is-medium">
             <ol>
+            {% if shuffle is true %}
                 <li>선택지 순서는 랜덤입니다.</li>
+            {% endif %}
                 <li>다시 선택 할 수 없습니다.</li>
+                <li>1인당 1번 투표 할 수 있습니다.</li>
             </ol>
         </div>
     </div>

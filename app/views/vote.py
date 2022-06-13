@@ -55,6 +55,7 @@ def create():
 
     vote.started = False
     vote.code = urandom(3).hex()
+    vote.shuffle = True
 
     try:
         db.session.add(vote)
@@ -109,6 +110,15 @@ def panel(vote_id: int):
         max=vote.max,
         opts=dumps(opts, ensure_ascii=True),
         started=vote.started,
+        shuffle=vote.shuffle,
+        shuffle_text={
+            True: "순서 고정",
+            False: "순서 랜덤",
+        }.get(vote.shuffle),
+        shuffle_class={
+            True: "button is-danger is-light is-large",
+            False: "button is-warning is-light is-large",
+        }.get(vote.shuffle),
         join_url="{scheme}://{host}{path}".format(
             scheme=request.scheme,
             host=request.host,
@@ -215,7 +225,9 @@ def do(vote_id: int):
     opts = Option.query.filter_by(
         vote_id=vote.id
     ).all()
-    shuffle(opts)
+
+    if vote.shuffle is True:
+        shuffle(opts)
 
     return render_template(
         "vote/do.html",
@@ -226,6 +238,7 @@ def do(vote_id: int):
                 "name": x.name,
             } for x in opts
         ],
+        shuffle=vote.shuffle,
         error=get_message()
     )
 
