@@ -2,8 +2,8 @@ function render_display(){
     const display = document.getElementById("display");
     display.innerHTML = "";
 
-    const handler = (event) => {
-        const target = event.target;
+    function delete_handler(event){
+        const option_id = event.target.dataset.id;
         Swal.fire({
             icon: "question",
             text: "해당 선택지를 삭제하시겠습니까?",
@@ -13,11 +13,11 @@ function render_display(){
             cancelButtonText: "아니요",
         }).then((result) => {
             if(result.isConfirmed){
-                fetch(`/api/opt?vote_id=${vote_id}&option_id=${target.dataset.id}`, {
+                fetch(`/api/opt?vote_id=${vote_id}&option_id=${option_id}`, {
                     method: "DELETE",
                 }).then((resp) => resp.json()).then((json) => {
                     if(json.code == 200){
-                        delete opts[target.dataset.id];
+                        delete opts[option_id];
                         render_display();
                     } else {
                         Swal.fire({
@@ -40,8 +40,19 @@ function render_display(){
         box.setAttribute("data-id", id);
         box.setAttribute("class", "box");
         box.setAttribute("style", "font-size:1.5rem;");
-        box.appendChild(document.createTextNode(opts[id]));
-        box.addEventListener("click", handler);
+
+        const option = document.createElement("p");
+        option.setAttribute("class", "mb-2");
+        option.appendChild(document.createTextNode(opts[id]));
+        box.appendChild(option);
+
+        const button = document.createElement("button");
+        button.setAttribute("data-id", id);
+        button.setAttribute("class", "button is-danger");
+        button.appendChild(document.createTextNode("선택지 삭제"));
+        button.addEventListener("click", delete_handler);
+        box.appendChild(button);
+
         display.appendChild(box);
     });
 }
