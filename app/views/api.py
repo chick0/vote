@@ -60,7 +60,7 @@ def new_option(vote: Vote):
     name = request.json.get("name", "").strip()[:30]
     if len(name) == 0:
         return resp(
-            message="이름없는 선택지는 등록할 수 없습니다.",
+            message="비어있는 선택지는 등록할 수 없습니다.",
             code=400
         )
 
