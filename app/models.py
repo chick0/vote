@@ -47,6 +47,12 @@ class Vote(db.Model):
         nullable=True
     )
 
+    shuffle = db.Column(
+        db.Boolean,
+        nullable=True,
+        default=False
+    )
+
     def __repr__(self):
         return f"<Vote id={self.id} title={self.title!r}>"
 
