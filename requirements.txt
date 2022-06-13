@@ -4,7 +4,7 @@
 #
 #    pip-compile
 #
-alembic==1.7.7
+alembic==1.8.0
     # via flask-migrate
 cffi==1.15.0
     # via gevent
@@ -53,7 +53,7 @@ python-dotenv==0.20.0
     # via -r requirements.in
 qrcode[pil]==7.3.1
     # via -r requirements.in
-sqlalchemy==1.4.36
+sqlalchemy==1.4.37
     # via
     #   alembic
     #   flask-sqlalchemy
