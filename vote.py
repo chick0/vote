@@ -1,4 +1,5 @@
 from os import environ
+from sys import argv
 from math import ceil
 from time import sleep
 from datetime import datetime
@@ -79,6 +80,10 @@ def main():
 
 if __name__ == "__main__":
     init_logger()
-    scheduler.start()
-    init_scheduler()
+    if "--no-scheduler" not in argv:
+        scheduler.start()
+        init_scheduler()
+    else:
+        logger.info("Scheduler disabled")
+
     main()
