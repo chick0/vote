@@ -21,6 +21,10 @@ VoteSession = namedtuple(
 
 
 def set_message(message: str) -> str:
+    for old_id in session:
+        if session[old_id] == message:
+            return old_id
+
     message_id = urandom(4).hex()
     session[message_id] = message
     return message_id
