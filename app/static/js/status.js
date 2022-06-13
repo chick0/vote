@@ -38,7 +38,7 @@ function start_vote(){
                 confirmButtonText: "닫기",
                 timer: 2022,
                 timerProgressBar: true
-            });    
+            });
         } else {
             Swal.fire({
                 icon: "error",
