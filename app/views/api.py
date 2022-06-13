@@ -64,6 +64,12 @@ def new_option(vote: Vote):
             code=400
         )
 
+    if name == "기권":
+        return resp(
+            message="기권 선택지는 등록 할 수 없습니다.",
+            code=400
+        )
+
     if Option.query.filter_by(
         vote_id=vote.id,
         name=name
