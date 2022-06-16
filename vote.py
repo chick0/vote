@@ -22,7 +22,7 @@ from app.models import Session
 from app.models import Option
 
 logger = getLogger()
-scheduler = BackgroundScheduler()
+scheduler = BackgroundScheduler(timezone="Asia/Seoul")
 
 
 def init_logger():
