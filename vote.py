@@ -37,7 +37,12 @@ def init_scheduler():
     if "SQLALCHEMY_DATABASE_URI" not in environ:
         load_dotenv()
 
-    engine = create_engine(environ['SQLALCHEMY_DATABASE_URI'])
+    engine = create_engine(
+        url=environ['SQLALCHEMY_DATABASE_URI'],
+        pool_size=1,
+        max_overflow=1,
+    )
+
     factory = sessionmaker(bind=engine)
     item_in_page = 20
 
@@ -71,6 +76,8 @@ def init_scheduler():
                 session.commit()
 
             sleep(5)
+
+        session.close()
 
 
 def main():
