@@ -74,6 +74,9 @@ def init_scheduler():
                 ).delete()
 
                 session.commit()
+                logger.info(f"vote deleted / id={vote.id} /"
+                            f"created at {vote.creation_date.__str__()!r} / "
+                            f"finished at {vote.finished_date.__str__()!r}")
 
             sleep(5)
 
