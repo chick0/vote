@@ -1,5 +1,5 @@
-.env
-.SECRET_KEY
-
 .idea/
 venv/
+__pycache__/
+
+.env

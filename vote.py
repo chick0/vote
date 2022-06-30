@@ -2,62 +2,24 @@ from os import environ
 from sys import argv
 from math import ceil
 from time import sleep
+from secrets import token_hex
 from datetime import datetime
-from datetime import timedelta
-from logging import getLogger
-from logging import StreamHandler
-from logging import Formatter
-from logging import INFO
-from logging import WARNING
 
-from waitress import serve
+from uvicorn import run
 from dotenv import load_dotenv
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
 from apscheduler.schedulers.background import BackgroundScheduler
 
-from app import create_app
-from app.models import Vote
-from app.models import Session
-from app.models import Option
+from app import app as __app__
+from sql import get_session
+from sql.models import Vote
+from sql.models import VoteSession
+from sql.models import VoteOption
 
-logger = getLogger()
-scheduler = BackgroundScheduler(timezone="Asia/Seoul")
-
-
-def init_logger():
-    logger.setLevel(INFO)
-    handler = StreamHandler()
-    handler.setFormatter(fmt=Formatter("%(asctime)s [%(levelname)s]: %(message)s", "%Y-%m-%d %H:%M:%S"))
-    logger.addHandler(hdlr=handler)
-    getLogger('apscheduler.executors.default').setLevel(WARNING)
-
-
-def init_scheduler():
-    if "SQLALCHEMY_DATABASE_URI" not in environ:
-        load_dotenv()
-
-    engine = create_engine(
-        url=environ['SQLALCHEMY_DATABASE_URI'],
-        pool_size=1,
-        max_overflow=1,
-    )
-
-    factory = sessionmaker(bind=engine)
-    item_in_page = 20
-
-    def get_session():
-        return factory()
-
-    @scheduler.scheduled_job(
-        "cron",
-        hour="*/1",
-        id="vote_clean_up",
-        name="remove expired vote",
-    )
+if __name__ == "__main__":
     def vote_clean_up():
+        item_in_page = 20
         session = get_session()
-        filters = Vote.creation_date < datetime.now() - timedelta(hours=6)
+        filters = datetime.now() > Vote.finished_at
 
         length = session.query(Vote).filter(filters).count()
         total_page = ceil(length / item_in_page)
@@ -66,34 +28,42 @@ def init_scheduler():
             for vote in session.query(Vote).filter(filters) \
                     .offset(item_in_page * (page - 1)).limit(item_in_page).all():
                 session.delete(vote)
-                session.query(Session).filter_by(
-                    vote_id=vote.id
-                ).delete()
-                session.query(Option).filter_by(
-                    vote_id=vote.id
-                ).delete()
-
+                session.query(VoteSession).filter_by(vote_id=vote.id).delete()
+                session.query(VoteOption).filter_by(vote_id=vote.id).delete()
                 session.commit()
-                logger.info(f"vote deleted / id={vote.id} /"
-                            f"created at {vote.creation_date.__str__()!r} / "
-                            f"finished at {vote.finished_date.__str__()!r}")
 
             sleep(5)
 
         session.close()
 
+    # import env
+    load_dotenv()
 
-def main():
-    host, port = "127.0.0.1", 28282
-    serve(app=create_app(), host=host, port=port, _quiet=False)
+    # set up scheduler
+    scheduler = BackgroundScheduler(timezone="Asia/Seoul")
+    scheduler.start()
+    scheduler.add_job(
+        func=vote_clean_up,
+        trigger="cron",
+        id="vote_clean_up",
+        name="remove expired vote",
+        # kwargs
+        hour="*/1",
+    )
 
-
-if __name__ == "__main__":
-    init_logger()
-    if "--no-scheduler" not in argv:
-        scheduler.start()
-        init_scheduler()
+    # set jwt secret
+    if "--dev" in argv:
+        key = "chick_0"
     else:
-        logger.info("Scheduler disabled")
+        key = token_hex(48)
 
-    main()
+    environ.__setitem__("JWT_SECRET", key)
+
+    run(
+        app=__app__,
+        host="127.0.0.1",
+        port=28282,
+        log_level="info",
+        #
+        workers=1
+    )
