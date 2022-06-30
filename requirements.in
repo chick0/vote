@@ -1,8 +1,10 @@
-flask
+fastapi
 qrcode[pil]
-flask-sqlalchemy
-flask-migrate
-mysqlclient
+uvicorn
+websockets
+pyjwt
 python-dotenv
-waitress
+SQLAlchemy
+alembic
+mysqlclient
 apscheduler
