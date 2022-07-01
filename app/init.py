@@ -18,7 +18,7 @@ def init(app: FastAPI):
     @app.get(
         "/api/version",
         response_model=Version,
-        tags=["version"]
+        tags=["Version"]
     )
     async def get_version():
         return Version()
