@@ -34,6 +34,16 @@ async def join_vote(request: JoinRequest):
             }
         )
 
+    if session.query(VoteSession).filter_by(
+        vote_id=vote.id
+    ).count() >= vote.max:
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "msg": "투표 참여가 마감된 투표입니다."
+            }
+        )
+
     vote_session = VoteSession()
     vote_session.vote_id = vote.id
     vote_session.selected = False
