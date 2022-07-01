@@ -4,12 +4,14 @@ from fastapi import HTTPException
 from fastapi.security import HTTPBearer
 
 from sql import get_session
+from sql.models import Vote
 from sql.models import VoteOption
 from models.options import Option
 from models.options import Options
 from models.options import OptionRequest
 from models.options import OptionDelete
 from models.options import OptionDeleteResult
+from models.status import Status
 from utils.token import parse_token
 
 router = APIRouter(tags=['Options'])
@@ -68,6 +70,19 @@ async def create_new_option(request: OptionRequest, token=Depends(auth)):
 
     session = get_session()
 
+    if session.query(Vote).filter_by(
+        id=payload.vote_id,
+        code=payload.code,
+        status=Status.VOTE.value
+    ).count() != 0:
+        session.close()
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "msg": "진행중인 투표는 수정할 수 없습니다."
+            }
+        )
+
     if session.query(VoteOption).filter_by(
         vote_id=payload.vote_id,
         name=name
@@ -123,6 +138,19 @@ async def update_option(request: Option, token=Depends(auth)):
 
     session = get_session()
 
+    if session.query(Vote).filter_by(
+        id=payload.vote_id,
+        code=payload.code,
+        status=Status.VOTE.value
+    ).count() != 0:
+        session.close()
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "msg": "진행중인 투표는 수정할 수 없습니다."
+            }
+        )
+
     if session.query(VoteOption).filter_by(
         vote_id=payload.vote_id,
         name=name
@@ -168,6 +196,20 @@ async def update_option(request: OptionDelete, token=Depends(auth)):
         )
 
     session = get_session()
+
+    if session.query(Vote).filter_by(
+        id=payload.vote_id,
+        code=payload.code,
+        status=Status.VOTE.value
+    ).count() != 0:
+        session.close()
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "msg": "진행중인 투표는 수정할 수 없습니다."
+            }
+        )
+
     deleted = session.query(VoteOption).filter_by(
         id=request.id,
         vote_id=payload.vote_id
