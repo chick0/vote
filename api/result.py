@@ -70,6 +70,11 @@ async def get_vote_result(ctx: Request, token=Depends(auth)):
         if payload.session_id == "admin":
             vote.status = Status.FINISH.value
             session.commit()
+
+            await ctx.scope['sockets'].broadcast(
+                vote_id=payload.vote_id,
+                data=str(Status.FINISH.value)
+            )
         else:
             session.close()
             raise HTTPException(
