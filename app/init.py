@@ -32,13 +32,9 @@ def init(app: FastAPI):
     app.add_websocket_route("/ws", VoteWebSocketHandler)
 
     # setup cors
-    allow_origins = [environ['HOST'].strip()]
-    if '--dev' in argv:
-        allow_origins.append("http://localhost:3000")
-
     app.add_middleware(
         CORSMiddleware,
-        allow_origins=allow_origins,
+        allow_origins=[environ['HOST'].strip()],
         allow_methods=["GET", "PATCH", "POST", "DELETE"],
         allow_headers=["Authorization"]
     )
