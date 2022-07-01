@@ -27,6 +27,7 @@ async def join_vote(request: JoinRequest):
     ).first()
 
     if vote is None:
+        session.close()
         raise HTTPException(
             status_code=400,
             detail={
@@ -37,6 +38,7 @@ async def join_vote(request: JoinRequest):
     if session.query(VoteSession).filter_by(
         vote_id=vote.id
     ).count() >= vote.max:
+        session.close()
         raise HTTPException(
             status_code=400,
             detail={
