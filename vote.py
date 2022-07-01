@@ -19,7 +19,7 @@ if __name__ == "__main__":
     def vote_clean_up():
         item_in_page = 20
         session = get_session()
-        filters = datetime.now() > Vote.finished_at
+        filters = datetime.now() > Vote.deleted_at
 
         length = session.query(Vote).filter(filters).count()
         total_page = ceil(length / item_in_page)
@@ -27,9 +27,9 @@ if __name__ == "__main__":
         for page in range(1, total_page + 1):
             for vote in session.query(Vote).filter(filters) \
                     .offset(item_in_page * (page - 1)).limit(item_in_page).all():
-                session.delete(vote)
-                session.query(VoteSession).filter_by(vote_id=vote.id).delete()
                 session.query(VoteOption).filter_by(vote_id=vote.id).delete()
+                session.query(VoteSession).filter_by(vote_id=vote.id).delete()
+                session.delete(vote)
                 session.commit()
 
             sleep(5)
