@@ -1,5 +1,4 @@
 from os import environ
-from sys import argv
 
 from fastapi import APIRouter
 from fastapi.applications import FastAPI
