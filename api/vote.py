@@ -10,6 +10,7 @@ from sqlalchemy.exc import IntegrityError
 
 from sql import get_session
 from sql.models import Vote
+from sql.models import VoteOption
 from models.vote import CreateRequest
 from models.vote import CreateResponse
 from models.vote import VoteInformation
@@ -132,6 +133,16 @@ async def update_vote_status(ctx: Request, token=Depends(auth)):
         )
 
     session = get_session()
+
+    if session.query(VoteOption).filter_by(
+        vote_id=payload.vote_id
+    ).count() < 2:
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "msg": "투표를 시작하려면 적어도 2개 이상의 선택지를 등록해야 합니다."
+            }
+        )
 
     vote: Vote = session.query(Vote).filter_by(
         id=payload.vote_id,
