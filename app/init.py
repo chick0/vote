@@ -28,7 +28,7 @@ def init(app: FastAPI):
 
     app.include_router(router=router)
     app.add_middleware(VoteMiddleware)
-    app.add_websocket_route("/ws", VoteWebSocketHandler)
+    app.add_websocket_route("/ws/vote", VoteWebSocketHandler)
 
     # setup cors
     app.add_middleware(
