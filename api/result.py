@@ -1,6 +1,7 @@
 from random import randint
 
 from fastapi import APIRouter
+from fastapi import Request
 from fastapi import Depends
 from fastapi import HTTPException
 from fastapi.security import HTTPBearer
@@ -31,7 +32,7 @@ def get_random_color() -> str:
     description="투표 결과를 확인합니다.",
     response_model=VoteResult
 )
-async def get_vote_result(token=Depends(auth)):
+async def get_vote_result(ctx: Request, token=Depends(auth)):
     def calc_percent(t) -> str:
         try:
             per = int(t / vote.max * 100)
