@@ -34,8 +34,6 @@ async def get_options(token=Depends(auth)):
                 )
                 for x in session.query(VoteOption).filter_by(
                     vote_id=payload.vote_id
-                ).order_by(
-                    VoteOption.id.desc()
                 ).all()
             ]
         )
@@ -58,7 +56,9 @@ async def create_new_option(request: OptionRequest, token=Depends(auth)):
             }
         )
 
-    if len(request.name.strip()) == 0:
+    name = request.name.strip()[:30]
+
+    if len(name) == 0:
         raise HTTPException(
             status_code=400,
             detail={
@@ -66,11 +66,24 @@ async def create_new_option(request: OptionRequest, token=Depends(auth)):
             }
         )
 
+    session = get_session()
+
+    if session.query(VoteOption).filter_by(
+        vote_id=payload.vote_id,
+        name=name
+    ).count() != 0:
+        session.close()
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "msg": "중복된 선택지는 등록 할 수 없습니다."
+            }
+        )
+
     new_option = VoteOption()
     new_option.vote_id = payload.vote_id
-    new_option.name = request.name.strip()[:30]
+    new_option.name = name
 
-    session = get_session()
     session.add(new_option)
     session.commit()
 
@@ -98,7 +111,9 @@ async def update_option(request: Option, token=Depends(auth)):
             }
         )
 
-    if len(request.name.strip()) == 0:
+    name = request.name.strip()[:30]
+
+    if len(name) == 0:
         raise HTTPException(
             status_code=400,
             detail={
@@ -107,12 +122,25 @@ async def update_option(request: Option, token=Depends(auth)):
         )
 
     session = get_session()
+
+    if session.query(VoteOption).filter_by(
+        vote_id=payload.vote_id,
+        name=name
+    ).count() != 0:
+        session.close()
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "msg": "중복된 선택지는 등록 할 수 없습니다."
+            }
+        )
+
     option: VoteOption = session.query(VoteOption).filter_by(
         id=request.id,
         vote_id=payload.vote_id
     ).first()
 
-    option.name = request.name.strip()[:30]
+    option.name = name
     session.commit()
 
     try:
