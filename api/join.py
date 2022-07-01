@@ -54,6 +54,7 @@ async def join_vote(request: JoinRequest):
     try:
         return JoinResponse(
             vote_id=request.vote_id,
+            title=vote.title,
             token=create_token(
                 vote_id=vote.id,
                 session_id=vote_session.id,

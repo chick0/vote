@@ -8,4 +8,5 @@ class JoinRequest(BaseModel):
 
 class JoinResponse(BaseModel):
     vote_id: int
+    title: str
     token: str
