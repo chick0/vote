@@ -3,6 +3,7 @@ __all__ = [
     "options",
     "qrcode",
     "result",
+    "select",
     "vote",
 ]
 
