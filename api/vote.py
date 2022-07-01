@@ -109,7 +109,8 @@ async def get_vote_information(token=Depends(auth)):
     try:
         return VoteInformation(
             title=vote.title,
-            status=vote.status
+            status=vote.status,
+            max=vote.max
         )
     finally:
         session.close()

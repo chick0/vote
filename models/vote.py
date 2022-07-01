@@ -15,6 +15,7 @@ class CreateResponse(BaseModel):
 class VoteInformation(BaseModel):
     title: str
     status: int
+    max: int
 
 
 class StatusUpdated(BaseModel):
