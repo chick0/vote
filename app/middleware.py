@@ -32,10 +32,10 @@ class SocketStore:
             if socket.client_state == WebSocketState.CONNECTED
         ]
 
-    async def broadcast(self, vote_id: int):
+    async def broadcast(self, vote_id: int, data: str):
         for socket in await self.fetch_sockets(vote_id=vote_id):
             try:
-                await socket.send_text("200=socket_updated")
+                await socket.send_text(data)
             except (ConnectionClosedOK, Exception):
                 await self.pop_socket(
                     vote_id=vote_id,

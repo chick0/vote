@@ -178,7 +178,8 @@ async def update_vote_status(ctx: Request, token=Depends(auth)):
     session.close()
 
     await ctx.scope['sockets'].broadcast(
-        vote_id=payload.vote_id
+        vote_id=payload.vote_id,
+        data=str(Status.VOTE.value)
     )
 
     return StatusUpdated(
