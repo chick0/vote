@@ -1,5 +1,6 @@
 from os import environ
 from datetime import datetime
+from typing import Union
 
 from fastapi import HTTPException
 from pydantic import BaseModel
@@ -13,7 +14,7 @@ algorithms = ["HS256"]
 
 class Payload(BaseModel):
     vote_id: int
-    session_id: int or str = "\"admin\" or session_id"
+    session_id: Union[int, str] = "\"admin\" or session_id"
     code: str
     exp: int
 
