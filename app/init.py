@@ -8,6 +8,7 @@ from pydantic import BaseModel
 import api
 from app.middleware import VoteMiddleware
 from app.ws import VoteWebSocketHandler
+from app.ws import panel_ws_handler
 
 
 def init(app: FastAPI):
@@ -29,6 +30,7 @@ def init(app: FastAPI):
     app.include_router(router=router)
     app.add_middleware(VoteMiddleware)
     app.add_websocket_route("/ws/vote", VoteWebSocketHandler)
+    app.add_websocket_route("/ws/panel", panel_ws_handler)
 
     # setup cors
     app.add_middleware(
