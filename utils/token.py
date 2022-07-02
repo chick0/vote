@@ -13,7 +13,7 @@ algorithms = ["HS256"]
 
 class Payload(BaseModel):
     vote_id: int
-    session_id: int | str = "\"admin\" or session_id"
+    session_id: int or str = "\"admin\" or session_id"
     code: str
     exp: int
 
