@@ -27,8 +27,8 @@ if __name__ == "__main__":
         for page in range(1, total_page + 1):
             for vote in session.query(Vote).filter(filters) \
                     .offset(item_in_page * (page - 1)).limit(item_in_page).all():
-                session.query(VoteOption).filter_by(vote_id=vote.id).delete()
                 session.query(VoteSession).filter_by(vote_id=vote.id).delete()
+                session.query(VoteOption).filter_by(vote_id=vote.id).delete()
                 session.delete(vote)
                 session.commit()
 
