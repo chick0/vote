@@ -63,6 +63,11 @@ async def panel_ws_handler(websocket: WebSocket):
     except HTTPException:
         await websocket.close(reason="인증 토큰이 올바르지 않습니다.")
         return
+    except (WebSocketDisconnect, Exception):
+        if websocket.client_state == WebSocketState.CONNECTED:
+            await websocket.close(reason="알 수 없는 오류가 발생했습니다.")
+
+        return
 
     try:
         while True:
