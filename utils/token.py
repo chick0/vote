@@ -30,7 +30,8 @@ def parse_token(token: str) -> Payload:
         raise HTTPException(
             status_code=403,
             detail={
-                "msg": "인증 토큰이 올바르지 않습니다."
+                "msg": "인증 토큰이 올바르지 않습니다.",
+                "remove_token": True,
             }
         )
     except ExpiredSignatureError:
