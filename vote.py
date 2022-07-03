@@ -52,10 +52,11 @@ if __name__ == "__main__":
     )
 
     # set jwt secret
-    if "--dev" in argv:
-        key = "chick_0"
-    else:
+    try:
+        key = open(".JWT_SECRET", mode="rb").read().hex()
+    except (FileNotFoundError, Exception):
         key = token_hex(48)
+        open(".JWT_SECRET", mode="wb").write(bytes.fromhex(key))
 
     environ.__setitem__("JWT_SECRET", key)
 
