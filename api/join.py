@@ -7,6 +7,7 @@ from sql.models import Vote
 from sql.models import VoteSession
 from models.join import JoinRequest
 from models.join import JoinResponse
+from models.status import Status
 from utils.token import create_token
 
 router = APIRouter(tags=['Join'])
@@ -23,7 +24,8 @@ async def join_vote(request: JoinRequest):
     session = get_session()
     vote: Vote = session.query(Vote).filter_by(
         id=request.vote_id,
-        code=request.code
+        code=request.code,
+        status=Status.WAIT.value
     ).first()
 
     if vote is None:
