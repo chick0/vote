@@ -1,7 +1,6 @@
 fastapi
 qrcode[pil]
 uvicorn
-websockets
 pyjwt
 python-dotenv
 SQLAlchemy

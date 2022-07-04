@@ -64,8 +64,6 @@ tzlocal==4.2
     # via apscheduler
 uvicorn==0.18.2
     # via -r requirements.in
-websockets==10.3
-    # via -r requirements.in
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools
