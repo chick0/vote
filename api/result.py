@@ -1,4 +1,5 @@
 from random import randint
+from datetime import datetime
 
 from fastapi import APIRouter
 from fastapi import Depends
@@ -68,6 +69,7 @@ async def get_vote_result(token=Depends(auth)):
     if vote.status == Status.VOTE.value:
         if payload.session_id == "admin":
             vote.status = Status.FINISH.value
+            vote.finished_at = datetime.now()
             session.commit()
         else:
             session.close()

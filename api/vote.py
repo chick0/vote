@@ -1,4 +1,6 @@
 from os import urandom
+from datetime import datetime
+from datetime import timedelta
 
 from fastapi import APIRouter
 from fastapi import Depends
@@ -35,6 +37,9 @@ async def create_vote(request: CreateRequest):
     vote.max = request.max
     vote.status = Status.WAIT.value
     vote.code = urandom(3).hex()
+
+    vote.created_at = datetime.now()
+    vote.finished_at = vote.created_at + timedelta(hours=6)
 
     if len(vote.title) == 0:
         vote.title = "제목 없는 투표"

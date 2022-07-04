@@ -37,21 +37,18 @@ class Vote(Base):
     created_at = Column(
         DateTime,
         nullable=False,
-        default=datetime.now()
     )
 
     # 투표가 마감된 시간
     finished_at = Column(
         DateTime,
         nullable=True,
-        default=None,
     )
 
     # 투표 삭제 시간
     deleted_at = Column(
         DateTime,
         nullable=False,
-        default=datetime.now() + timedelta(hours=6)
     )
 
     # models.status : Status
