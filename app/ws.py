@@ -33,6 +33,8 @@ async def vote(websocket: WebSocket):
 
         return
 
+    last = ""
+
     try:
         while True:
             session = get_session()
@@ -49,14 +51,17 @@ async def vote(websocket: WebSocket):
                 await websocket.close(reason="서버에 등록된 투표가 아닙니다.")
                 return
 
-            await websocket.send_text(
-                "{vote_id},{status}".format(
-                    vote_id=payload.vote_id,
-                    status=_vote.status
-                )
+            this = "{vote_id},{status}".format(
+                vote_id=payload.vote_id,
+                status=_vote.status
             )
 
             session.close()
+
+            if last != this:
+                last = this
+                await websocket.send_text(this)
+
             await sleep(5)
     except (WebSocketDisconnect, Exception):
         if websocket.client_state == WebSocketState.CONNECTED:
@@ -84,23 +89,28 @@ async def panel(websocket: WebSocket):
 
         return
 
+    last = ""
+
     try:
         while True:
             session = get_session()
 
-            await websocket.send_text(
-                "{joined},{selected}".format(
-                    joined=session.query(VoteSession).filter_by(
-                        vote_id=payload.vote_id
-                    ).count(),
-                    selected=session.query(VoteSession).filter_by(
-                        vote_id=payload.vote_id,
-                        selected=True
-                    ).count()
-                )
+            this = "{joined},{selected}".format(
+                joined=session.query(VoteSession).filter_by(
+                    vote_id=payload.vote_id
+                ).count(),
+                selected=session.query(VoteSession).filter_by(
+                    vote_id=payload.vote_id,
+                    selected=True
+                ).count()
             )
 
             session.close()
+
+            if last != this:
+                last = this
+                await websocket.send_text(this)
+
             await sleep(5)
     except (WebSocketDisconnect, ConnectionClosedOK, ConnectionClosedError):
         pass
