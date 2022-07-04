@@ -4,6 +4,7 @@ __all__ = [
     "qrcode",
     "result",
     "select",
+    "status",
     "vote",
 ]
 
