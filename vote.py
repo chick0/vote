@@ -1,5 +1,4 @@
 from os import environ
-from sys import argv
 from math import ceil
 from time import sleep
 from secrets import token_hex
@@ -9,7 +8,6 @@ from uvicorn import run
 from dotenv import load_dotenv
 from apscheduler.schedulers.background import BackgroundScheduler
 
-from app import app as __app__
 from sql import get_session
 from sql.models import Vote
 from sql.models import VoteSession
@@ -61,10 +59,8 @@ if __name__ == "__main__":
     environ.__setitem__("JWT_SECRET", key)
 
     run(
-        app=__app__,
+        app="app:app",
         host="127.0.0.1",
         port=28282,
         log_level="info",
-        #
-        workers=1
     )
