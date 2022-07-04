@@ -18,12 +18,25 @@ from utils.token import parse_token
 async def vote(websocket: WebSocket):
     await websocket.close()
 
-    while True:
-        try:
-            token = await wait_for(fut=websocket.receive_text(), timeout=5)
-            payload = parse_token(token=token)
+    try:
+        token = await wait_for(fut=websocket.receive_text(), timeout=5)
+        payload = parse_token(token=token)
+    except TimeoutError:
+        await websocket.close(reason="인증 토큰을 전달 받지 못했습니다.")
+        return
+    except HTTPException:
+        await websocket.close(reason="인증 토큰이 올바르지 않습니다.")
+        return
+    except (WebSocketDisconnect, Exception):
+        if websocket.client_state == WebSocketState.CONNECTED:
+            await websocket.close(reason="알 수 없는 오류가 발생했습니다.")
 
+        return
+
+    try:
+        while True:
             session = get_session()
+
             _vote: Vote = session.query(Vote).filter_by(
                 id=payload.vote_id,
                 code=payload.code
@@ -40,18 +53,15 @@ async def vote(websocket: WebSocket):
                     status=_vote.status
                 )
             )
-        except TimeoutError:
-            await websocket.close(reason="인증 토큰을 전달 받지 못했습니다.")
-        except HTTPException:
-            await websocket.close(reason="인증 토큰이 올바르지 않습니다.")
-        except (WebSocketDisconnect, Exception):
-            if websocket.client_state == WebSocketState.CONNECTED:
-                await websocket.close(reason="알 수 없는 오류가 발생했습니다.")
-        finally:
-            if websocket.client_state == WebSocketState.CONNECTED:
-                await websocket.close()
 
-            return
+            session.close()
+            await sleep(5)
+    except (WebSocketDisconnect, Exception):
+        if websocket.client_state == WebSocketState.CONNECTED:
+            await websocket.close(reason="알 수 없는 오류가 발생했습니다.")
+    finally:
+        if websocket.client_state == WebSocketState.CONNECTED:
+            await websocket.close()
 
 
 async def panel(websocket: WebSocket):
