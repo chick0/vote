@@ -39,7 +39,7 @@ async def create_vote(request: CreateRequest):
     vote.code = urandom(3).hex()
 
     vote.created_at = datetime.now()
-    vote.finished_at = vote.created_at + timedelta(hours=6)
+    vote.deleted_at = vote.created_at + timedelta(hours=6)
 
     if len(vote.title) == 0:
         vote.title = "제목 없는 투표"
