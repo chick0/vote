@@ -1,7 +1,6 @@
 from random import randint
 
 from fastapi import APIRouter
-from fastapi import Request
 from fastapi import Depends
 from fastapi import HTTPException
 from fastapi.security import HTTPBearer
@@ -32,7 +31,7 @@ def get_random_color() -> str:
     description="투표 결과를 확인합니다.",
     response_model=VoteResult
 )
-async def get_vote_result(ctx: Request, token=Depends(auth)):
+async def get_vote_result(token=Depends(auth)):
     def calc_percent(t) -> str:
         try:
             per = int(t / vote.max * 100)
@@ -70,11 +69,6 @@ async def get_vote_result(ctx: Request, token=Depends(auth)):
         if payload.session_id == "admin":
             vote.status = Status.FINISH.value
             session.commit()
-
-            await ctx.scope['sockets'].broadcast(
-                vote_id=payload.vote_id,
-                data=str(Status.FINISH.value)
-            )
         else:
             session.close()
             raise HTTPException(

@@ -1,7 +1,6 @@
 from os import urandom
 
 from fastapi import APIRouter
-from fastapi import Request
 from fastapi import Depends
 from fastapi import HTTPException
 from fastapi import status as _
@@ -122,7 +121,7 @@ async def get_vote_information(token=Depends(auth)):
     description="투표의 상태를 변경합니다. (대기중 -> 투표중)",
     response_model=StatusUpdated
 )
-async def update_vote_status(ctx: Request, token=Depends(auth)):
+async def update_vote_status(token=Depends(auth)):
     payload = parse_token(token=token.credentials)
     if payload.session_id != "admin":
         raise HTTPException(
@@ -176,11 +175,6 @@ async def update_vote_status(ctx: Request, token=Depends(auth)):
     vote.status = Status.VOTE.value
     session.commit()
     session.close()
-
-    await ctx.scope['sockets'].broadcast(
-        vote_id=payload.vote_id,
-        data=str(Status.VOTE.value)
-    )
 
     return StatusUpdated(
         msg="투표가 시작되었습니다. "
