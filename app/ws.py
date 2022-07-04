@@ -1,3 +1,4 @@
+from time import time
 from asyncio import sleep
 from asyncio import wait_for
 from asyncio.exceptions import TimeoutError
@@ -33,29 +34,36 @@ async def vote(websocket: WebSocket):
 
         return
 
+    last = time() - 30
+
     try:
         while True:
-            session = get_session()
+            await websocket.receive_text()
+            if time() - last >= 5:
+                last = time()
+                session = get_session()
 
-            _vote: Vote = session.query(Vote).filter_by(
-                id=payload.vote_id,
-                code=payload.code
-            ).with_entities(
-                Vote.status
-            ).first()
+                _vote: Vote = session.query(Vote).filter_by(
+                    id=payload.vote_id,
+                    code=payload.code
+                ).with_entities(
+                    Vote.status
+                ).first()
 
-            if _vote is None:
-                await websocket.close(reason="서버에 등록된 투표가 아닙니다.")
-
-            await websocket.send_text(
-                "{vote_id},{status}".format(
-                    vote_id=payload.vote_id,
-                    status=_vote.status
-                )
-            )
-
-            session.close()
-            await sleep(5)
+                if _vote is None:
+                    session.close()
+                    await websocket.close(reason="서버에 등록된 투표가 아닙니다.")
+                    return
+                else:
+                    session.close()
+                    await websocket.send_text(
+                        "{vote_id},{status}".format(
+                            vote_id=payload.vote_id,
+                            status=_vote.status
+                        )
+                    )
+            else:
+                await websocket.send_text("너무 빨리 요청했습니다.")
     except (WebSocketDisconnect, Exception):
         if websocket.client_state == WebSocketState.CONNECTED:
             await websocket.close(reason="알 수 없는 오류가 발생했습니다.")
