@@ -25,7 +25,6 @@ async def join_vote(request: JoinRequest):
     vote: Vote = session.query(Vote).filter_by(
         id=request.vote_id,
         code=request.code,
-        status=Status.WAIT.value
     ).first()
 
     if vote is None:
@@ -34,6 +33,15 @@ async def join_vote(request: JoinRequest):
             status_code=400,
             detail={
                 "msg": "등록된 투표가 아닙니다."
+            }
+        )
+
+    if vote.status == Status.FINISH.value:
+        session.close()
+        raise HTTPException(
+            status_code=400,
+            detail={
+                "msg": "마감된 투표 입니다."
             }
         )
 
