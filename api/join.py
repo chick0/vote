@@ -70,6 +70,7 @@ async def join_vote(request: JoinRequest):
             token=create_token(
                 vote_id=vote.id,
                 session_id=vote_session.id,
+                title=vote.title,
                 code=vote.code,
                 exp=vote.deleted_at
             )

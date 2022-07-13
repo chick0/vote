@@ -15,6 +15,7 @@ algorithms = ["HS256"]
 class Payload(BaseModel):
     vote_id: int
     session_id: Union[int, str] = "\"admin\" or session_id"
+    title: str
     code: str
     exp: int
 
@@ -43,11 +44,12 @@ def parse_token(token: str) -> Payload:
         )
 
 
-def create_token(vote_id: int, session_id: int or str, code: str, exp: datetime) -> str:
+def create_token(vote_id: int, session_id: int or str, title, code: str, exp: datetime) -> str:
     return encode(
         payload=Payload(
             vote_id=vote_id,
             session_id=session_id,
+            title=title,
             code=code,
             exp=int(exp.timestamp())
         ).dict(),

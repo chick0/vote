@@ -81,6 +81,7 @@ async def create_vote(request: CreateRequest):
             token=create_token(
                 vote_id=vote.id,
                 session_id="admin",
+                title=vote.title,
                 code=vote.code,
                 exp=vote.deleted_at
             )
