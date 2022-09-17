@@ -24,7 +24,7 @@ h11==0.13.0
     # via uvicorn
 idna==3.3
     # via anyio
-mako==1.2.0
+mako==1.2.2
     # via alembic
 markupsafe==2.1.1
     # via mako
